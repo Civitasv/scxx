@@ -1,12 +1,140 @@
-#+TITLE: Scheme Compiler In C++ from Scratch
+#+TITLE: Scheme interpreter In C++ from Scratch
 #+AUTHOR: Civitasv
-
+#+ABSTRACT: 使用 C++ 编写 Scheme 解释器，读取 Scheme 代码，并执行。
 
 * 执行流程
 
+** Scanner
+
+TODO
+
+又称词法分析(lexical analysis)，用于扫描字符串，获得所有 tokens.
+
+Example:
+
+#+begin_src text
+"var average = (min + max) / 2;" ->:
+"var" "average" "=" "(" "min" "+" "max" ")" "/" "2" ";" 
+#+end_src
 
 
+
+
+** Parser
+
+TODO
+
+Get Abstract syntax tree.
+And get syntax errors.
+
+** Static analysis
+
+TODO
+
+类型。
+
+** Intermediate representations
+
+Java 有 JVM，正是一种 intermediate representations。
+Not include this!
+
+** Optimization
+
+Not include this!
+
+** Code generation
+
+Virtual machine byte code? Or native code.
+
+或者使用 /Transpilers/ ，即将 原始代码 编译为 目标语言代码，然后使用目标语言的编译器执行该目标代码。
+
+Not include this!
+
+** Runtime
+
+Garbage collector, type.
+
+编译语言中，runtime 会直接在 executable file 中（Go语言是这样的），但如果该语言在解释器或 Virtual Machine 中执行，runtime 会在解释器或 VM 中（Java、Python、JavaScript是这样的）。
+
+Not include this!
+
+** 总结
+1. Scanner, lexical analysis
+2. Parser, get abstract syntax tree
+3. Evaluation, in C++
+   
+* Scheme 语法
+
+** 算术操作
+
+#+begin_src scheme
+  (/ 10 5) ;; 2
+  (+ 1 2) ;; 3
+#+end_src
+
+如表达式 ~(/ 10 5)~ ， ~/~ 是算子， ~10 5~ 是操作数。
+
+** 变量
+
+#+begin_src scheme
+  (define q (+ 1 2)) ;; q will be 3
+#+end_src
+
+** 函数
+
+#+begin_src scheme
+  (define (square x) (* x x))
+#+end_src
+
+** cond/if
+
+用于条件判断。
+
+#+begin_src scheme
+  (cond (<p1> <e1>)
+        (<p2> <e2>)
+        (<p3> <e3>)
+        ...
+        (<p4> <e4>)
+        (else <other>))
+#+end_src
+
+#+begin_src scheme
+  (if <p> <result> <alternative>)
+#+end_src
+
+** 逻辑判断
+
+#+begin_src scheme
+  (and <p1> <p2> ... <pn>)
+  (or <p1> <p2> ... <pn>)
+  (not <p1>)
+#+end_src
+
+** List
+
+#+begin_src scheme
+  (define a (cons 1 (cons 2 (cons 3 '()))))
+
+  (car a) ;; 1
+  (cadr a) ;; 2
+  (length a) ;; 3
+
+  (define (map proc items)
+    (if (null? items)
+        '()
+        (cons (proc (car items)) (map proc (cdr items)))))
+#+end_src
+
+* Some Good Knowledge
+
+a. 编译器（compiler）将 *源代码* 从一种较高级的形式 转变为 较低级的形式，编译后 *不直接执行*
+b. 解释器（interpreter）直接执行 *源代码*
+
+但事实上，现实世界中的编译器和解释器不是非此即彼，而是常常你中有我。
 
 * Reference
 
 1. [[https://github.com/jarro2783/cxxopts][cxxopts]]: A lightweight C++ command line option parser
+2. [[https://craftinginterpreters.com/a-map-of-the-territory.html][craftinginterpreters]]: Lox
+3. [[https://semver.org/lang/zh-CN/][语义化标签]]: 如何发布版本
