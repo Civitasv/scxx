@@ -2,6 +2,25 @@
 
 #include "cxxopts/cxxopts.hpp"
 
+#define CV_STRING_IMPLENTATION
+#include "cv_string.h"
+
+std::string read() { return "source"; }
+
+void print(const std::string& message) { std::cout << message; }
+
+void repl() {
+  // read, eval, print, loop
+  while (true) {
+    print(">>> ");
+    std::string input = read();
+    // std::string output = eval(input);
+    print("\n");
+    print(input);
+    print("\n");
+  }
+}
+
 void parse(int argc, const char* argv[]) {
   cxxopts::Options options(argv[0], "Scheme Compiler in C++");
 

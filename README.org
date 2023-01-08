@@ -4,6 +4,8 @@
 
 * 执行流程
 
+Program => Scanner => Tokens => Parser => AST => Eval => Result
+
 ** Scanner
 
 TODO
@@ -13,12 +15,15 @@ TODO
 Example:
 
 #+begin_src text
-"var average = (min + max) / 2;" ->:
-"var" "average" "=" "(" "min" "+" "max" ")" "/" "2" ";" 
+  "var average = (min + max) / 2;" ->:
+  "var" "average" "=" "(" "min" "+" "max" ")" "/" "2" ";" 
 #+end_src
 
+Implementation:
 
-
+#+begin_src cpp
+  
+#+end_src
 
 ** Parser
 
@@ -64,6 +69,21 @@ Not include this!
 3. Evaluation, in C++
    
 * Scheme 语法
+
+** Number/Symbol
+
+Atomic expressions.
+
+#+begin_src scheme
+  1 ;; 1, 1 is a number
+
+  ;; (define a 1)
+  a ;; 1, a is a symbol
+#+end_src
+
+其他的都是 List expressions.
+
+How beautiful!
 
 ** 算术操作
 
@@ -128,10 +148,50 @@ Not include this!
 
 * Some Good Knowledge
 
+** 编译器 vs 解释器
+
 a. 编译器（compiler）将 *源代码* 从一种较高级的形式 转变为 较低级的形式，编译后 *不直接执行*
 b. 解释器（interpreter）直接执行 *源代码*
 
 但事实上，现实世界中的编译器和解释器不是非此即彼，而是常常你中有我。
+
+** Lisp
+
+Lisp 有诸多的实现，
+
+** 动态类型 vs 静态类型
+
+[[https://www.baeldung.com/cs/statically-vs-dynamically-typed-languages][Comparison]]
+
+*** 动态类型语言，但是存在编译实现
+
+1. LuaJIT, just-in-time compiler
+2. Chez scheme, scheme compiler
+
+Why?
+
+Better performance!
+
+如果对动态类型语言使用编译器编译，那么类型也得在编译阶段确定。
+
+*** 静态类型语言，但是存在解释实现
+
+很稀有。
+
+1. Objective Caml.
+
+Why?
+
+Easy to debug.
+
+如果对静态类型语言使用解释器解释，那么类型检查应该是在运行阶段。
+
+*** 总结
+
+动态类型，或是静态类型，与编译还是解释没有直接的关联。
+但是动态类型往往是解释型语言，静态类型往往是编译型语言。这可能是因为 动态类型 相比于 静态类型，没那么“严肃”，也不是为高性能而设计的。
+
+感觉如果对静态类型语言使用解释器，那么这个静态类型语言此时应该叫“动态类型语言了”，毕竟编程语言只是字符串的集合而已，真正重要的是如何去解析它。
 
 * Reference
 
