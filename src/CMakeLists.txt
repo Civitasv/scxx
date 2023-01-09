@@ -1,4 +1,4 @@
-add_library(interpreter definition.cc environment.cc eval.cc expression.cc)
+add_library(interpreter definition.cc environment.cc eval.cc expression.cc procedure.cc)
 
 target_include_directories(interpreter PUBLIC ${CMAKE_SOURCE_DIR}/vendor
                                               ${CMAKE_SOURCE_DIR}/include)

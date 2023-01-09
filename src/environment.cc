@@ -4,7 +4,7 @@
 
 namespace scxx {
 Environment::Environment() {}
-Environment::Environment(std::vector<Symbol*> variables,
+Environment::Environment(std::vector<Symbol> variables,
                          std::vector<Expression*> values,
                          Environment* outer_env)
     : outer_env(outer_env) {
@@ -16,7 +16,7 @@ Environment::Environment(std::vector<Symbol*> variables,
   }
 }
 
-Expression* Environment::Find(Symbol* variable) {
+Expression* Environment::Find(Symbol variable) {
   if (env.find(variable) != env.end())
     return env[variable];
   else if (outer_env)
@@ -25,7 +25,7 @@ Expression* Environment::Find(Symbol* variable) {
     return nullptr;
 }
 
-void Environment::Insert(Symbol* variable, Expression* expression) {
+void Environment::Insert(Symbol variable, Expression* expression) {
   env[variable] = expression;
 }
 

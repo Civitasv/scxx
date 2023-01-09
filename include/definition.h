@@ -1,11 +1,10 @@
 #pragma once
+
 #include <iostream>
 
 #include "type.h"
 
 namespace scxx {
-struct Expression;
-
 struct Definition {
   Symbol* variable;
   Expression* value;

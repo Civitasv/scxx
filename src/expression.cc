@@ -1,5 +1,7 @@
 #include "expression.h"
 
+#include "procedure.h"
+
 namespace scxx {
 
 Expression::Expression() {}
@@ -11,6 +13,10 @@ Expression::Expression(List* list) : type(LIST) { value.list = list; }
 Expression::Expression(Definition* definition) : type(DEFINITION) {
   value.definition = definition;
 }
+Expression::Expression(Procedure* procedure) : type(PROCEDURE) {
+  value.procedure = procedure;
+}
+
 Expression::Expression(Proc proc) : type(PROC) { value.proc = proc; }
 
 Expression::~Expression() {
@@ -20,6 +26,8 @@ Expression::~Expression() {
     if (value.number) delete value.number;
   } else if (type == DEFINITION) {
     if (value.definition) delete value.definition;
+  } else if (type == PROCEDURE) {
+    if (value.procedure) delete value.procedure;
   } else if (type == LIST) {
     if (value.list) delete value.list;
   }
@@ -36,8 +44,11 @@ std::ostream& operator<<(std::ostream& os, const Expression& exp) {
     case Expression::DEFINITION:
       os << *exp.value.definition;
       break;
+    case Expression::PROCEDURE:
+      os << *exp.value.procedure;
+      break;
     case Expression::PROC:
-      os << "Procedure";
+      os << "PROC";
       break;
     case Expression::LIST:
       os << "[";

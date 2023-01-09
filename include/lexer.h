@@ -59,11 +59,11 @@ struct Token {
 
 class Lexer {
  public:
-  Lexer(const std::string& source) : source(source) {}
+  Lexer() {}
 
   /// @brief 进行词法分析，获取所有 tokens.
   /// @return 所有 tokens.
-  std::vector<Token*> Tokenize() {
+  std::vector<Token*> Tokenize(std::string& source) {
     // 1. split the source by whitespace
     cv_string::Replace(source, "(", " ( ");
     cv_string::Replace(source, ")", " ) ");
@@ -86,8 +86,5 @@ class Lexer {
     });
     return tokens;
   }
-
- private:
-  std::string source;
 };
 }  // namespace scxx

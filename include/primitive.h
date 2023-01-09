@@ -18,7 +18,7 @@ inline Expression* Add(std::vector<Expression*> exprs) {
 inline Environment* StandardEnv() {
   Environment* env = new Environment();
 
-  env->Insert(new Symbol("+"), new Expression(Add));
+  env->Insert("+", new Expression(Add));
 
   return env;
 }

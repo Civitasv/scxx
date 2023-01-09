@@ -4,19 +4,28 @@
 #include <vector>
 
 #include "definition.h"
+#include "procedure.h"
 #include "type.h"
 
 namespace scxx {
-typedef std::vector<Expression*> List;
-typedef Expression* (*Proc)(std::vector<Expression*>);
-
 struct Expression {
-  enum Type { SYMBOL, NUMBER, PROC, DEFINITION, LIST };
+  enum Type {
+    // Atom
+    SYMBOL,
+    NUMBER,
+    // Special
+    DEFINITION,
+    // Primitive and User defined
+    PROCEDURE,
+    PROC,
+    LIST
+  };
   union Value {
     Number* number;
     Symbol* symbol;
     Definition* definition;
     List* list;
+    Procedure* procedure;
     Proc proc;
   };
 
@@ -27,6 +36,7 @@ struct Expression {
   Expression(Number* number);
   Expression(List* list);
   Expression(Definition* definition);
+  Expression(Procedure* procedure);
   Expression(Proc proc);
 
   ~Expression();

@@ -1,22 +1,37 @@
 ﻿#include <iostream>
 
 #include "cxxopts/cxxopts.hpp"
+#include "environment.h"
+#include "eval.h"
+#include "lexer.h"
+#include "parser.h"
+#include "primitive.h"
 
 #define CV_STRING_IMPLENTATION
 #include "cv_string.h"
 
-std::string read() { return "source"; }
+std::string read() {
+  std::string source;
+  getline(std::cin, source);
+  return source;
+}
 
 void print(const std::string& message) { std::cout << message; }
 
 void repl() {
+  using namespace scxx;
+  Environment* environment = StandardEnv();
+  Lexer lexer;
+  Parser parser;
   // read, eval, print, loop
   while (true) {
     print(">>> ");
     std::string input = read();
-    // std::string output = eval(input);
+    auto tokens = lexer.Tokenize(input);
+    auto expr = parser.Parse(tokens);
+    auto output = Eval(expr, environment);
     print("\n");
-    print(input);
+    std::cout << *output;
     print("\n");
   }
 }
@@ -42,7 +57,7 @@ void parse(int argc, const char* argv[]) {
     exit(0);
   }
 
-  std::cout << options.help() << std::endl;
+  repl();
 }
 
 int main(int argc, const char** argv) {
