@@ -25,13 +25,12 @@ void repl() {
   Parser parser;
   // read, eval, print, loop
   while (true) {
-    print(">>> ");
+    print("1 ]=> ");
     std::string input = read();
     auto tokens = lexer.Tokenize(input);
     auto expr = parser.Parse(tokens);
     auto output = Eval(expr, environment);
-    print("\n");
-    std::cout << *output;
+    std::cout << ";Value: " << *output;
     print("\n");
   }
 }

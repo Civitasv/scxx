@@ -12,14 +12,16 @@ Expression* Eval(Expression* expr, scxx::Environment* env) {
     Symbol* variable = expr->value.definition->variable;
 
     // 2. retrieve the value
-    Expression* value = expr->value.definition->value;
+    Expression* value = Eval(expr->value.definition->value, env);
 
     env->Insert(*variable, value);
+    return new Expression(variable);
   } else if (expr->type == Expression::PROCEDURE) {
     Procedure* procedure = expr->value.procedure;
 
     // 1. the function
-    Expression* proc = Eval(procedure->proc, env);
+    Symbol* proc_name = procedure->proc_name;
+    Expression* proc = env->Find(*proc_name);
 
     // 2. the args
     std::vector<Expression*> args;

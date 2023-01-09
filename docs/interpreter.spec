@@ -16,5 +16,5 @@ Primitive = (+ - * /)
 Proc      = (Primitive, User-defined)
 Func      = (Special, Proc)
 List      = (Func expr1 expr2 ...)
-Expr      = (List, Atom)
+Expr      = (List, Atom, Func)
 Env       = map

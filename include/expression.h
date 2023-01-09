@@ -12,14 +12,18 @@ struct Expression {
   enum Type {
     // Atom
     SYMBOL,
+    // 在这里，Token 中的 Symbol 分成了 Symbol 和 Proc
+    PROC,
     NUMBER,
+    // Spec 中的 List 分为 Special 和 Procedure
     // Special
     DEFINITION,
     // Primitive and User defined
     PROCEDURE,
-    PROC,
+
     LIST
   };
+
   union Value {
     Number* number;
     Symbol* symbol;

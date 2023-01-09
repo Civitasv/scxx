@@ -4,22 +4,30 @@
 
 #include "environment.h"
 #include "expression.h"
-#include "type.h"
 
 namespace scxx {
-inline Expression* Add(std::vector<Expression*> exprs) {
-  double d = 0.0;
-  for (auto& expr : exprs) {
-    d += *(expr->value.number);
-  }
-  return new Expression(new Number(d));
-}
+// +
+Expression* Add(std::vector<Expression*> exprs);
+Expression* Minus(std::vector<Expression*> exprs);
+Expression* Product(std::vector<Expression*> exprs);
+Expression* Divide(std::vector<Expression*> exprs);
 
-inline Environment* StandardEnv() {
-  Environment* env = new Environment();
+Expression* Quote(std::vector<Expression*> exprs);
+Expression* Gt(std::vector<Expression*> exprs);
+Expression* Lt(std::vector<Expression*> exprs);
+Expression* Ge(std::vector<Expression*> exprs);
+Expression* Le(std::vector<Expression*> exprs);
+Expression* Eq(std::vector<Expression*> exprs);
+Expression* Abs(std::vector<Expression*> exprs);
+Expression* Cons(std::vector<Expression*> exprs);
+Expression* Car(std::vector<Expression*> exprs);
+Expression* Cdr(std::vector<Expression*> exprs);
+Expression* SameAddress(std::vector<Expression*> exprs);
+Expression* Max(std::vector<Expression*> exprs);
+Expression* Min(std::vector<Expression*> exprs);
+Expression* Map(std::vector<Expression*> exprs);
+Expression* IsNumber(std::vector<Expression*> exprs);
+Expression* IsProcedure(std::vector<Expression*> exprs);
 
-  env->Insert("+", new Expression(Add));
-
-  return env;
-}
+Environment* StandardEnv();
 }  // namespace scxx

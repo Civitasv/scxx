@@ -40,7 +40,7 @@ class Parser {
         return new Expression(new Definition(variable, value));
       } else if (type == Token::SYMBOL) {
         // Proc
-        Expression* proc_name = new Expression(tokens[*pos]->value.symbol);
+        Symbol* proc_name = tokens[*pos]->value.symbol;
         (*pos)++;
         // args
         std::vector<Expression*> args;

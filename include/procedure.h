@@ -5,10 +5,10 @@
 
 namespace scxx {
 struct Procedure {
-  Expression* proc;
+  Symbol* proc_name;
   std::vector<Expression*> args;
 
-  Procedure(Expression* proc, std::vector<Expression*> args);
+  Procedure(Symbol* proc_name, std::vector<Expression*> args);
 
   ~Procedure();
 

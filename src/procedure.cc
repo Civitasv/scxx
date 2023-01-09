@@ -3,11 +3,11 @@
 #include "expression.h"
 
 namespace scxx {
-Procedure::Procedure(Expression* proc, std::vector<Expression*> args)
-    : proc(proc), args(args) {}
+Procedure::Procedure(Symbol* proc_name, std::vector<Expression*> args)
+    : proc_name(proc_name), args(args) {}
 
 std::ostream& operator<<(std::ostream& os, const Procedure& procedure) {
-  os << "Proc: " << *procedure.proc << " ";
+  os << "Proc: " << *procedure.proc_name << " ";
   os << "Args: "
      << " ";
   for (auto& item : procedure.args) {
@@ -17,7 +17,7 @@ std::ostream& operator<<(std::ostream& os, const Procedure& procedure) {
 }
 
 Procedure::~Procedure() {
-  if (proc) delete proc;
+  delete proc_name;
   for (auto& item : args) delete item;
 }
 }  // namespace scxx

@@ -28,8 +28,6 @@ Expression::~Expression() {
     if (value.definition) delete value.definition;
   } else if (type == PROCEDURE) {
     if (value.procedure) delete value.procedure;
-  } else if (type == LIST) {
-    if (value.list) delete value.list;
   }
 }
 
@@ -49,15 +47,6 @@ std::ostream& operator<<(std::ostream& os, const Expression& exp) {
       break;
     case Expression::PROC:
       os << "PROC";
-      break;
-    case Expression::LIST:
-      os << "[";
-      for (int i = 0; i < exp.value.list->size(); i++) {
-        Expression* item = (*exp.value.list)[i];
-        os << *item;
-        if (i != exp.value.list->size() - 1) os << " ";
-      }
-      os << "]";
       break;
     default:
       break;
