@@ -1,6 +1,7 @@
 #include "eval.h"
 
 #include "environment.h"
+#include "predicate.h"
 #include "type.h"
 
 namespace scxx {
@@ -10,6 +11,13 @@ Expression Eval(const Expression& expr, Environment* env) {
     return expr;
   } else if (expr.type == Expression::SYMBOL) {
     return env->Find(*expr.value.symbol);
+  } else if (expr.type == Expression::CONDITION) {
+    Expression predicate = Eval(*expr.value.condition->predicate, env);
+    if (IsTrue(&predicate)) {
+      return Eval(*expr.value.condition->consequent, env);
+    } else {
+      return Eval(*expr.value.condition->alternative, env);
+    }
   } else if (expr.type == Expression::DEFINITION) {
     // 1. retrieve the variable
     Symbol* variable = expr.value.definition->variable;

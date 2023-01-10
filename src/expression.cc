@@ -1,6 +1,7 @@
 #include "expression.h"
 
 #include "call.h"
+#include "condition.h"
 #include "definition.h"
 #include "primitive.h"
 #include "procedure.h"
@@ -76,6 +77,9 @@ Expression::Expression(const Number& number) : type(NUMBER) {
 Expression::Expression(const Quotation& quotation) : type(QUOTATION) {
   value.quotation = new Quotation(quotation);
 }
+Expression::Expression(const Condition& condition) : type(CONDITION) {
+  value.condition = new Condition(condition);
+}
 Expression::Expression(const Definition& definition) : type(DEFINITION) {
   value.definition = new Definition(definition);
 }
@@ -133,6 +137,11 @@ Expression::~Expression() {
       delete value.quotation;
       value.quotation = nullptr;
     }
+  } else if (type == CONDITION) {
+    if (value.condition) {
+      delete value.condition;
+      value.condition = nullptr;
+    }
   }
 }
 
@@ -149,6 +158,9 @@ std::ostream& operator<<(std::ostream& os, const Expression& expr) {
       break;
     case Expression::QUOTATION:
       os << *expr.value.quotation;
+      break;
+    case Expression::CONDITION:
+      os << *expr.value.condition;
       break;
     case Expression::CALL:
       os << *expr.value.call;

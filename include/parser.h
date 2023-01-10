@@ -58,7 +58,7 @@ class Parser {
 
   /// @brief
   /// 将 List 进一步解析为
-  /// Special(define, quotation, lambda)
+  /// Special(if, define, quotation, lambda)
   /// 和 Call(Primitive 和 Procedure)
   /// @param expr
   /// @return Expression
@@ -72,7 +72,14 @@ class Parser {
         return {};
       }
       auto symbol = *list[0].value.symbol;
-      if (symbol == "define") {
+
+      if (symbol == "if") {
+        // (if (> 2 1) (* x x) (* x 2))
+        Expression predicate = ExtractList(list[1]);
+        Expression consequent = ExtractList(list[2]);
+        Expression alternative = ExtractList(list[3]);
+        return Condition(predicate, consequent, alternative);
+      } else if (symbol == "define") {
         Symbol variable(*list[1].value.symbol);
         Expression value = ExtractList(list[2]);
         return Definition(variable, value);

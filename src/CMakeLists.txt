@@ -5,6 +5,7 @@ add_library(
   eval.cc
   expression.cc
   call.cc
+  condition.cc
   primitive.cc
   procedure.cc
   quotation.cc)

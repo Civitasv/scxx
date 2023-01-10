@@ -107,6 +107,7 @@ class Lexer {
                     } else if (s == ")") {
                       if (quote) {
                         tokens.push_back(Token::RIGHT_PAREN);
+                        quote = false;
                       }
                       tokens.push_back(Token::RIGHT_PAREN);
                     } else if (s == "'") {

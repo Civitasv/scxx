@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "call.h"
+#include "condition.h"
 #include "definition.h"
 #include "primitive.h"
 #include "procedure.h"
@@ -22,7 +23,7 @@ struct Expression {
     DEFINITION,
     QUOTATION,  // quotation 也用在 map 中
     LAMBDA,
-    IF,
+    CONDITION,
     /** ------------- */
 
     /** Function call */
@@ -44,6 +45,7 @@ struct Expression {
 
     Definition* definition;
     Quotation* quotation;
+    Condition* condition;
 
     Call* call;
     Procedure* procedure;
@@ -63,6 +65,7 @@ struct Expression {
   Expression(const Symbol& symbol);
   Expression(const Number& number);
   Expression(const Quotation& quotation);
+  Expression(const Condition& condition);
   Expression(const Definition& definition);
   Expression(const Call& call);
   Expression(const Primitive& primitive);
