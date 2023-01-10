@@ -111,7 +111,12 @@ Expression Abs(const List& exprs) {
   return d;
 }
 
-Expression Cons(const List& exprs) { return List({exprs[0], exprs[1]}); }
+Expression Cons(const List& exprs) {
+  List list;
+  list.push_back(exprs[0]);
+  list.push_back(exprs[1]);
+  return list;
+}
 
 Expression Car(const List& exprs) { return (*exprs[0].value.list)[0]; }
 

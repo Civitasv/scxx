@@ -154,7 +154,12 @@ std::ostream& operator<<(std::ostream& os, const Expression& expr) {
       os << *expr.value.call;
       break;
     case Expression::LIST:
-      os << "(" << *expr.value.list << ")";
+      os << "(";
+      for (int i = 0; i < expr.value.list->size() - 1; i++) {
+        os << expr.value.list->at(i) << " ";
+      }
+      os << expr.value.list->at(expr.value.list->size() - 1);
+      os << ")";
       break;
     case Expression::PRIMITIVE:
       os << *expr.value.primitive;

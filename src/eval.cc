@@ -47,7 +47,7 @@ Expression Eval(const Expression& expr, Environment* env) {
       return Eval(body->at(body->size() - 1), &this_env);
     } else if (expr.type == Expression::PRIMITIVE) {
       Proc proc = expr.value.primitive->proc;
-      return Eval(proc(args), env);
+      return proc(args);
     }
   }
   return {};
