@@ -8,6 +8,7 @@ namespace scxx {
 struct Quotation {
   Expression* quotes;
 
+  Quotation();
   Quotation(const Expression& expr);
 
   Quotation(const Quotation& quotation);

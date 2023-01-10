@@ -29,7 +29,7 @@ void repl() {
     std::string input = read();
     std::vector<Token> tokens = lexer.Tokenize(input);
     Expression expr = parser.Parse(tokens);
-    Expression output = Eval(expr, *environment);
+    Expression output = Eval(expr, environment);
     std::cout << ";Value: " << output;
     print("\n");
   }

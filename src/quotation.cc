@@ -5,6 +5,8 @@
 #include "expression.h"
 
 namespace scxx {
+Quotation::Quotation() : quotes(nullptr) {}
+
 Quotation::Quotation(const Expression& expr) : quotes(new Expression(expr)) {}
 
 Quotation::Quotation(const Quotation& quotation) {

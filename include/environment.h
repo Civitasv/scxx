@@ -11,7 +11,7 @@ namespace scxx {
 class Environment {
  public:
   Environment();
-  Environment(std::vector<Symbol> variables, std::vector<Expression> values,
+  Environment(std::vector<Symbol> variables, List values,
               Environment* outer_env);
 
   Expression Find(Symbol variable);

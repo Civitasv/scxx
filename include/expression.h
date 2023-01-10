@@ -3,7 +3,9 @@
 #include <iostream>
 #include <vector>
 
+#include "call.h"
 #include "definition.h"
+#include "primitive.h"
 #include "procedure.h"
 #include "quotation.h"
 #include "type.h"
@@ -11,32 +13,42 @@
 namespace scxx {
 struct Expression {
   enum Type {
-    // Atom
-    SYMBOL=-2,
-    // 在这里，Token 中的 Symbol 分成了 Symbol 和 Proc
-    PROC,
+    /** Atom */
+    SYMBOL,
     NUMBER,
-    // Spec 中的 List 分为 Special 和 Procedure
-    // Special
+    /** ------------- */
+
+    /** Special */
     DEFINITION,
     QUOTATION,  // quotation 也用在 map 中
     LAMBDA,
-    ASSIGNMENT,
-    // Primitive and User defined
-    PROCEDURE,
+    /** ------------- */
 
-    // A general type, 也用在 cons, car, cdr 中
-    LIST
+    /** Function call */
+    CALL,
+    // Primitive
+    PRIMITIVE,
+    // User defined
+    PROCEDURE,
+    /** ------------- */
+
+    /** Mid */
+    LIST,  // A general type, 也用在 cons, car, cdr 中
+    /** ------------- */
   };
 
   union Value {
     Number* number;
     Symbol* symbol;
+
     Definition* definition;
     Quotation* quotation;
+
+    Call* call;
     Procedure* procedure;
+    Primitive* primitive;
+
     List* list;
-    Proc proc;
   };
 
   Expression();
@@ -50,10 +62,11 @@ struct Expression {
   Expression(const Symbol& symbol);
   Expression(const Number& number);
   Expression(const Quotation& quotation);
-  Expression(const List& list);
   Expression(const Definition& definition);
+  Expression(const Call& call);
+  Expression(const Primitive& primitive);
   Expression(const Procedure& procedure);
-  Expression(Proc proc);
+  Expression(const List& list);
 
   Type type;
   Value value;

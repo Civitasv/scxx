@@ -4,8 +4,9 @@ add_library(
   environment.cc
   eval.cc
   expression.cc
-  procedure.cc
+  call.cc
   primitive.cc
+  procedure.cc
   quotation.cc)
 
 target_include_directories(interpreter PUBLIC ${CMAKE_SOURCE_DIR}/vendor

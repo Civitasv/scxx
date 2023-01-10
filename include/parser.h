@@ -18,15 +18,17 @@ class Parser {
   Expression Parse(std::vector<Token> tokens) {
     pos = 0;
     quotation = false;
-    // 1. first, 将 List 和 Atom, Func 分开
-    Expression expr = First(tokens);
-    // 2. second, 处理 List, 分开为 define, quotation, procedure
-    Expression result = Second(expr);
+    Expression expr = ResolveTokens(tokens);
+    Expression result = ExtractList(expr);
     return result;
   }
 
  private:
-  Expression First(std::vector<Token> tokens) {
+  /// @brief
+  /// 将 tokens 解析为 Call 和 Atom(Symbol & Number)
+  /// @param tokens
+  /// @return Expression
+  Expression ResolveTokens(std::vector<Token> tokens) {
     if (tokens.size() == pos) {
       Error("Unexpected EOF");
     }
@@ -38,7 +40,7 @@ class Parser {
       // if it is '(', go on until we met ')'
       List list;
       while (tokens[pos].type != Token::RIGHT_PAREN) {
-        Expression expr = First(tokens);
+        Expression expr = ResolveTokens(tokens);
         list.push_back(expr);
       }
       // skip ')'
@@ -51,40 +53,58 @@ class Parser {
       Symbol* atom = new Symbol();
       return *token.value.symbol;
     }
-    return nullptr;
+    return {};
   }
 
-  Expression Second(Expression& expr) {
+  /// @brief
+  /// 将 List 进一步解析为
+  /// Special(define, quotation, lambda)
+  /// 和 Call(Primitive 和 Procedure)
+  /// @param expr
+  /// @return Expression
+  Expression ExtractList(Expression& expr) {
     if (expr.type == Expression::NUMBER || expr.type == Expression::SYMBOL) {
       return expr;
     } else if (expr.type == Expression::LIST) {
       List list = *expr.value.list;
       auto type = list[0].type;
-      if (type == Expression::SYMBOL) {
-        auto symbol = *list[0].value.symbol;
-        if (symbol == "define") {
-          // variable is the second
-          Symbol variable(*list[1].value.symbol);
-          // value is the third
-          Expression value = Second(list[2]);
-          return Definition(variable, value);
-        } else if (symbol == "quote") {
-          // quotes is the second
-          Expression value = list[1];
-          return Quotation(value);
-        } else {
-          // it's a procedure
-          Symbol proc_name(symbol);
-          // args
-          List args;
-          for (int i = 1; i < list.size(); i++) {
-            args.push_back(Second(list[i]));
-          }
-          return Procedure(proc_name, args);
+      if (type != Expression::SYMBOL) {
+        return {};
+      }
+      auto symbol = *list[0].value.symbol;
+      if (symbol == "define") {
+        Symbol variable(*list[1].value.symbol);
+        Expression value = ExtractList(list[2]);
+        return Definition(variable, value);
+      } else if (symbol == "quote") {
+        Expression value = list[1];
+        return Quotation(value);
+      } else if (symbol == "lambda") {
+        // parameters
+        Expression expr1 = list[1];
+        std::vector<Symbol> parameters;
+        for (auto& item : *expr1.value.list) {
+          parameters.push_back(*item.value.symbol);
         }
+        // body
+        List body;
+        for (int i = 2; i < list.size(); i++) {
+          body.push_back(ExtractList(list[i]));
+        }
+        // then make a procedure
+        return Procedure(parameters, body);
+      } else {
+        // then it must be a call
+        Symbol proc_name(symbol);
+        // args
+        List args;
+        for (int i = 1; i < list.size(); i++) {
+          args.push_back(ExtractList(list[i]));
+        }
+        return Call(proc_name, args);
       }
     }
-    return nullptr;
+    return {};
   }
 };
 }  // namespace scxx

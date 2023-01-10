@@ -1,6 +1,8 @@
 #include "expression.h"
 
+#include "call.h"
 #include "definition.h"
+#include "primitive.h"
 #include "procedure.h"
 #include "quotation.h"
 #include "type.h"
@@ -35,6 +37,12 @@ Expression::Expression(const Expression& expr) {
         value.quotation = new Quotation(*expr.value.quotation);
       }
       break;
+    case Expression::CALL:
+      if (expr.value.call) {
+        type = CALL;
+        value.call = new Call(*expr.value.call);
+      }
+      break;
     case Expression::PROCEDURE:
       if (expr.value.procedure) {
         type = PROCEDURE;
@@ -47,10 +55,10 @@ Expression::Expression(const Expression& expr) {
         value.list = new List(*expr.value.list);
       }
       break;
-    case Expression::PROC:
-      if (expr.value.proc) {
-        type = PROC;
-        value.proc = *expr.value.proc;
+    case Expression::PRIMITIVE:
+      if (expr.value.primitive) {
+        type = PRIMITIVE;
+        value.primitive = new Primitive(*expr.value.primitive);
       }
       break;
     default:
@@ -68,17 +76,21 @@ Expression::Expression(const Number& number) : type(NUMBER) {
 Expression::Expression(const Quotation& quotation) : type(QUOTATION) {
   value.quotation = new Quotation(quotation);
 }
-Expression::Expression(const List& list) : type(LIST) {
-  value.list = new List(list);
-}
 Expression::Expression(const Definition& definition) : type(DEFINITION) {
   value.definition = new Definition(definition);
+}
+Expression::Expression(const Call& call) : type(CALL) {
+  value.call = new Call(call);
+}
+Expression::Expression(const List& list) : type(LIST) {
+  value.list = new List(list);
 }
 Expression::Expression(const Procedure& procedure) : type(PROCEDURE) {
   value.procedure = new Procedure(procedure);
 }
-
-Expression::Expression(Proc proc) : type(PROC) { value.proc = proc; }
+Expression::Expression(const Primitive& primitive) : type(PRIMITIVE) {
+  value.primitive = new Primitive(primitive);
+}
 
 Expression::~Expression() {
   if (type == SYMBOL) {
@@ -96,10 +108,25 @@ Expression::~Expression() {
       delete value.definition;
       value.definition = nullptr;
     }
+  } else if (type == CALL) {
+    if (value.call) {
+      delete value.call;
+      value.call = nullptr;
+    }
+  } else if (type == LIST) {
+    if (value.list) {
+      delete value.list;
+      value.list = nullptr;
+    }
   } else if (type == PROCEDURE) {
     if (value.procedure) {
       delete value.procedure;
       value.procedure = nullptr;
+    }
+  } else if (type == PRIMITIVE) {
+    if (value.primitive) {
+      delete value.primitive;
+      value.primitive = nullptr;
     }
   } else if (type == QUOTATION) {
     if (value.quotation) {
@@ -115,7 +142,7 @@ std::ostream& operator<<(std::ostream& os, const Expression& expr) {
       os << '"' << *expr.value.symbol << '"';
       break;
     case Expression::NUMBER:
-      os << "NUMBER: " << *expr.value.number;
+      os << *expr.value.number;
       break;
     case Expression::DEFINITION:
       os << *expr.value.definition;
@@ -123,18 +150,17 @@ std::ostream& operator<<(std::ostream& os, const Expression& expr) {
     case Expression::QUOTATION:
       os << *expr.value.quotation;
       break;
-    case Expression::PROCEDURE:
-      os << *expr.value.procedure;
+    case Expression::CALL:
+      os << *expr.value.call;
       break;
     case Expression::LIST:
-      os << "[";
-      for (auto& item : *expr.value.list) {
-        os << item << " ";
-      }
-      os << "]";
+      os << "(" << *expr.value.list << ")";
       break;
-    case Expression::PROC:
-      os << "PROC";
+    case Expression::PRIMITIVE:
+      os << *expr.value.primitive;
+      break;
+    case Expression::PROCEDURE:
+      os << *expr.value.procedure;
       break;
     default:
       break;

@@ -3,32 +3,37 @@
 #include "expression.h"
 
 namespace scxx {
-Procedure::Procedure(const Symbol& proc_name, const List& args)
-    : proc_name(new Symbol(proc_name)), args(new List(args)) {}
+Procedure::Procedure(const std::vector<Symbol>& params, const List& body,
+                     Environment* env)
+    : params(new std::vector<Symbol>(params)), body(new List(body)), env(env) {}
+
+Procedure::Procedure(const std::vector<Symbol>& params, const List& body)
+    : params(new std::vector<Symbol>(params)),
+      body(new List(body)),
+      env(nullptr) {}
 
 Procedure::Procedure(const Procedure& procedure) {
-  proc_name = new Symbol(*procedure.proc_name);
-  args = new List(*procedure.args);
+  params = new std::vector<Symbol>(*procedure.params);
+  body = new List(*procedure.body);
 }
 
 std::ostream& operator<<(std::ostream& os, const Procedure& procedure) {
-  os << "[Proc: " << *procedure.proc_name << " ";
-  os << "Args: ";
-  for (auto& item : *procedure.args) {
-    os << item << " ";
-  }
+  os << "[Procedure: ";
+  os << "Params: ";
+  for (auto& item : *procedure.params) std::cout << item << " ";
+  os << "Body: " << *procedure.body << " ";
   os << "]";
   return os;
 }
 
 Procedure::~Procedure() {
-  if (proc_name) {
-    delete proc_name;
-    proc_name = nullptr;
+  if (params) {
+    delete params;
+    params = nullptr;
   }
-  if (args) {
-    delete args;
-    args = nullptr;
+  if (body) {
+    delete body;
+    body = nullptr;
   }
 }
 }  // namespace scxx

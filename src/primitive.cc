@@ -1,8 +1,32 @@
 #include "primitive.h"
 
+#include "expression.h"
 #include "type.h"
 
 namespace scxx {
+
+Primitive::Primitive() : proc_name(nullptr), proc(nullptr) {}
+
+Primitive::Primitive(const Symbol& proc_name, const Proc& proc)
+    : proc_name(new Symbol(proc_name)), proc(proc) {}
+
+Primitive::Primitive(const Primitive& primitive) {
+  proc_name = new Symbol(*primitive.proc_name);
+  proc = primitive.proc;
+}
+
+std::ostream& operator<<(std::ostream& os, const Primitive& primitive) {
+  os << "[Primitive: " << *primitive.proc_name << " ";
+  return os;
+}
+
+Primitive::~Primitive() {
+  if (proc_name) {
+    delete proc_name;
+    proc_name = nullptr;
+  }
+}
+
 Expression Add(const List& exprs) {
   double d = 0.0;
   for (auto& expr : exprs) {
@@ -93,8 +117,6 @@ Expression Car(const List& exprs) { return (*exprs[0].value.list)[0]; }
 
 Expression Cdr(const List& exprs) { return (*exprs[0].value.list)[1]; }
 
-Expression SameAddress(const List& exprs) { return Symbol("#t"); }
-
 Expression Max(const List& exprs) {
   double max = *(exprs[0].value.number);
   for (int i = 1; i < exprs.size(); i++) {
@@ -113,54 +135,28 @@ Expression Min(const List& exprs) {
   return min;
 }
 
-Expression Map(const List& exprs) {
-  Proc f = exprs[0].value.proc;
-  const List& list = (*exprs[1].value.quotation->quotes->value.list);
-
-  Expression res = Expression::QUOTATION;
-
-  for (auto& item : list) {
-    Expression expr = f(List{item});
-    res.value.quotation->quotes->value.list->push_back(expr);
-  }
-
-  return res;
-}
-
-Expression IsNumber(const List& exprs) {
-  return Symbol(exprs[0].type == Expression::NUMBER ? "#t" : "#f");
-}
-
-Expression IsProcedure(const List& exprs) {
-  return Symbol(exprs[0].type == Expression::PROC ? "#t" : "#f");
-}
-
 Environment* StandardEnv() {
   Environment* env = new Environment();
 
-  env->Insert("#t", Symbol("#t"));
-  env->Insert("#f", Symbol("#f"));
+  env->Insert("#t", Expression("#t"));
+  env->Insert("#f", Expression("#f"));
 
-  env->Insert("+", Add);
-  env->Insert("-", Minus);
-  env->Insert("*", Product);
-  env->Insert("/", Divide);
-  env->Insert(">", Gt);
-  env->Insert("<", Lt);
-  env->Insert(">=", Ge);
-  env->Insert("<=", Le);
-  env->Insert("=", Eq);
-  env->Insert("abs", Abs);
-  env->Insert("cons", Cons);
-  env->Insert("car", Car);
-  env->Insert("cdr", Cdr);
-  env->Insert("eq?", SameAddress);
-  env->Insert("equal?", Eq);
-  env->Insert("map", Map);
-  env->Insert("max", Max);
-  env->Insert("min", Min);
-  env->Insert("number?", IsNumber);
-  env->Insert("procedure?", IsProcedure);
+  env->Insert("+", Primitive("+", Add));
+  env->Insert("-", Primitive("-", Minus));
+  env->Insert("*", Primitive("*", Product));
+  env->Insert("/", Primitive("/", Divide));
+  env->Insert(">", Primitive(">", Gt));
+  env->Insert("<", Primitive("<", Lt));
+  env->Insert(">=", Primitive(">=", Ge));
+  env->Insert("<=", Primitive("<=", Le));
+  env->Insert("=", Primitive("=", Eq));
+  env->Insert("abs", Primitive("abs", Abs));
+  env->Insert("cons", Primitive("cons", Cons));
+  env->Insert("car", Primitive("car", Car));
+  env->Insert("cdr", Primitive("cdr", Cdr));
+  env->Insert("equal?", Primitive("equal?", Eq));
+  env->Insert("max", Primitive("max", Max));
+  env->Insert("min", Primitive("min", Min));
 
   return env;
 }
