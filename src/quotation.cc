@@ -21,7 +21,7 @@ Quotation::~Quotation() {
 }
 
 std::ostream& operator<<(std::ostream& os, const Quotation& quotation) {
-  os << "QUOTES: " << *quotation.quotes;
+  os << "'" << *quotation.quotes;
   return os;
 }
 }  // namespace scxx

@@ -22,6 +22,7 @@ struct Expression {
     DEFINITION,
     QUOTATION,  // quotation 也用在 map 中
     LAMBDA,
+    IF,
     /** ------------- */
 
     /** Function call */

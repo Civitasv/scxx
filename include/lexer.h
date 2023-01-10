@@ -97,19 +97,28 @@ class Lexer {
     cv_string::Replace(source, "'", " ' ");
     std::vector<std::string> ss = cv_string::Split(source, " ");
 
+    bool quote = false;
     std::vector<Token> tokens{};
 
-    std::for_each(ss.begin(), ss.end(), [&tokens](const std::string& s) {
-      if (s == "(") {
-        tokens.push_back(Token::LEFT_PAREN);
-      } else if (s == ")") {
-        tokens.push_back(Token::RIGHT_PAREN);
-      } else if (cv_string::IsNumber(s)) {
-        tokens.push_back(std::stod(s));
-      } else {
-        tokens.push_back(s);
-      }
-    });
+    std::for_each(ss.begin(), ss.end(),
+                  [&tokens, &quote](const std::string& s) {
+                    if (s == "(") {
+                      tokens.push_back(Token::LEFT_PAREN);
+                    } else if (s == ")") {
+                      if (quote) {
+                        tokens.push_back(Token::RIGHT_PAREN);
+                      }
+                      tokens.push_back(Token::RIGHT_PAREN);
+                    } else if (s == "'") {
+                      quote = true;
+                      tokens.push_back(Token::LEFT_PAREN);
+                      tokens.push_back(Symbol("quote"));
+                    } else if (cv_string::IsNumber(s)) {
+                      tokens.push_back(std::stod(s));
+                    } else {
+                      tokens.push_back(s);
+                    }
+                  });
     return tokens;
   }
 };

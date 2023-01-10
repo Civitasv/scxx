@@ -115,7 +115,7 @@ Expression Cons(const List& exprs) {
   List list;
   list.push_back(exprs[0]);
   list.push_back(exprs[1]);
-  return list;
+  return Quotation(list);
 }
 
 Expression Car(const List& exprs) { return (*exprs[0].value.list)[0]; }
