@@ -35,6 +35,7 @@ Expression Car(const List& exprs);
 Expression Cdr(const List& exprs);
 Expression Max(const List& exprs);
 Expression Min(const List& exprs);
+Expression Empty(const List& exprs);
 
 Environment* StandardEnv();
 }  // namespace scxx

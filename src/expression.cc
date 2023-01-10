@@ -166,6 +166,10 @@ std::ostream& operator<<(std::ostream& os, const Expression& expr) {
       os << *expr.value.call;
       break;
     case Expression::LIST:
+      if (expr.value.list->size() == 0) {
+        os << "()";
+        break;
+      }
       os << "(";
       for (int i = 0; i < expr.value.list->size() - 1; i++) {
         os << expr.value.list->at(i) << " ";

@@ -140,6 +140,11 @@ Expression Min(const List& exprs) {
   return min;
 }
 
+Expression Empty(const List& exprs) {
+  List list = *exprs[0].value.list;
+  return list.size() == 0 ? Symbol("#t") : Symbol("#f");
+}
+
 Environment* StandardEnv() {
   Environment* env = new Environment();
 
@@ -162,6 +167,7 @@ Environment* StandardEnv() {
   env->Insert("equal?", Primitive("equal?", Eq));
   env->Insert("max", Primitive("max", Max));
   env->Insert("min", Primitive("min", Min));
+  env->Insert("empty?", Primitive("empty?", Empty));
 
   return env;
 }
