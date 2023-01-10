@@ -17,10 +17,9 @@ TEST(SCXX, LEX_1) {
 
   std::cout << "TOKENS: " << '\n';
   for (auto& token : tokens) {
-    std::cout << *token << '\n';
+    std::cout << token << '\n';
   }
   std::cout << '\n';
-  for (auto& token : tokens) delete token;
   EXPECT_EQ(1, 1);
 }
 
@@ -33,7 +32,6 @@ TEST(SCXX, PARSER_1) {
   Expression expr = parser.Parse(tokens);
   std::cout << expr << '\n';
 
-  for (auto& token : tokens) delete token;
   EXPECT_EQ(1, 1);
 }
 
@@ -46,7 +44,6 @@ TEST(SCXX, PARSER_2) {
   Expression expr = parser.Parse(tokens);
   std::cout << expr << '\n';
 
-  for (auto& token : tokens) delete token;
   EXPECT_EQ(1, 1);
 }
 
@@ -59,7 +56,6 @@ TEST(SCXX, PARSER_3) {
   Expression expr = parser.Parse(tokens);
   std::cout << expr << '\n';
 
-  for (auto& token : tokens) delete token;
   EXPECT_EQ(1, 1);
 }
 
@@ -72,7 +68,6 @@ TEST(SCXX, PARSER_4) {
   Expression expr = parser.Parse(tokens);
   std::cout << expr << '\n';
 
-  for (auto& token : tokens) delete token;
   EXPECT_EQ(1, 1);
 }
 
@@ -85,6 +80,5 @@ TEST(SCXX, PARSER_5) {
   Expression expr = parser.Parse(tokens);
   std::cout << expr << '\n';
 
-  for (auto& token : tokens) delete token;
   EXPECT_EQ(1, 1);
 }

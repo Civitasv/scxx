@@ -12,15 +12,39 @@
 namespace scxx {
 
 struct Token {
-  enum Type { LEFT_PAREN, RIGHT_PAREN, SYMBOL, NUMBER, DEFINITION, QUOTATION };
+  enum Type { LEFT_PAREN, RIGHT_PAREN, SYMBOL, NUMBER };
   union Value {
     Number* number;
     Symbol* symbol;
   };
 
+  Token(const Token& token) {
+    switch (token.type) {
+      case NUMBER:
+        if (token.value.number) {
+          type = NUMBER;
+          value.number = new Number(*token.value.number);
+        }
+        break;
+      case SYMBOL:
+        if (token.value.symbol) {
+          type = SYMBOL;
+          value.symbol = new Symbol(*token.value.symbol);
+        }
+        break;
+      default:
+        type = token.type;
+        break;
+    }
+  }
+
   Token(Type type) : type(type) {}
-  Token(Symbol* symbol) : type(SYMBOL) { value.symbol = symbol; }
-  Token(Number* number) : type(NUMBER) { value.number = number; }
+  Token(const Symbol& symbol) : type(SYMBOL) {
+    value.symbol = new Symbol(symbol);
+  }
+  Token(const Number& number) : type(NUMBER) {
+    value.number = new Number(number);
+  }
 
   ~Token() {
     if (type == SYMBOL) {
@@ -53,12 +77,6 @@ struct Token {
       case Token::NUMBER:
         os << "NUMBER: " << *token.value.number;
         break;
-      case Token::DEFINITION:
-        os << "DEFINE";
-        break;
-      case Token::QUOTATION:
-        os << "QUOTE";
-        break;
       default:
         break;
     }
@@ -72,27 +90,24 @@ class Lexer {
 
   /// @brief 进行词法分析，获取所有 tokens.
   /// @return 所有 tokens.
-  std::vector<Token*> Tokenize(std::string& source) {
+  std::vector<Token> Tokenize(std::string& source) {
     // 1. split the source by whitespace
     cv_string::Replace(source, "(", " ( ");
     cv_string::Replace(source, ")", " ) ");
+    cv_string::Replace(source, "'", " ' ");
     std::vector<std::string> ss = cv_string::Split(source, " ");
 
-    std::vector<Token*> tokens{};
+    std::vector<Token> tokens{};
 
     std::for_each(ss.begin(), ss.end(), [&tokens](const std::string& s) {
       if (s == "(") {
-        tokens.push_back(new Token(Token::LEFT_PAREN));
+        tokens.push_back(Token::LEFT_PAREN);
       } else if (s == ")") {
-        tokens.push_back(new Token(Token::RIGHT_PAREN));
-      } else if (s == "define") {
-        tokens.push_back(new Token(Token::DEFINITION));
-      } else if (s == "quote") {
-        tokens.push_back(new Token(Token::QUOTATION));
+        tokens.push_back(Token::RIGHT_PAREN);
       } else if (cv_string::IsNumber(s)) {
-        tokens.push_back(new Token(new Number(std::stod(s))));
+        tokens.push_back(std::stod(s));
       } else {
-        tokens.push_back(new Token(new Symbol(s)));
+        tokens.push_back(s);
       }
     });
     return tokens;

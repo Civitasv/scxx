@@ -26,7 +26,7 @@ Expression Environment::Find(Symbol variable) {
 }
 
 void Environment::Insert(const Symbol& variable, const Expression& expression) {
-  env[variable] = expression;
+  env.insert_or_assign(variable, expression);
 }
 
 Environment::~Environment() {}

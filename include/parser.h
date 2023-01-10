@@ -10,72 +10,79 @@
 
 namespace scxx {
 class Parser {
+ private:
+  int pos;
+  bool quotation;
+
  public:
-  Expression Parse(std::vector<Token*> tokens) {
-    int pos = 0;
-    return helper(tokens, pos, false);
+  Expression Parse(std::vector<Token> tokens) {
+    pos = 0;
+    quotation = false;
+    // 1. first, 将 List 和 Atom, Func 分开
+    Expression expr = First(tokens);
+    // 2. second, 处理 List, 分开为 define, quotation, procedure
+    Expression result = Second(expr);
+    return result;
   }
 
  private:
-  Expression helper(std::vector<Token*> tokens, int& pos, bool quote) {
+  Expression First(std::vector<Token> tokens) {
     if (tokens.size() == pos) {
       Error("Unexpected EOF");
     }
-    Token* token = tokens[pos++];
-    if (token->type == Token::RIGHT_PAREN) {
+    Token token = tokens[pos++];
+    if (token.type == Token::RIGHT_PAREN) {
       // if it is ')'
       Error("Syntax error: )");
-    } else if (token->type == Token::LEFT_PAREN) {
+    } else if (token.type == Token::LEFT_PAREN) {  // Expression
       // if it is '(', go on until we met ')'
-      Token::Type type = tokens[pos]->type;
-      if (quote) {
-        // 如果在 quote 下，那么直接读取 list
-        List list;
-        while (tokens[pos]->type != Token::RIGHT_PAREN) {
-          Expression expr = helper(tokens, pos, quote);
-          list.push_back(expr);
-        }
-        // skip ')'
-        pos++;
-        return list;
-      } else {
-        if (type == Token::DEFINITION) {
-          // 1. Definition, (define x (+ 1 2))
-          // variable
-          pos++;
-          Symbol variable(*tokens[pos]->value.symbol);
-          // value
-          pos++;
-          Expression value = helper(tokens, pos, false);
-          return Definition(variable, value);
-        } else if (type == Token::QUOTATION) {
-          // 2. Quotation, (quote (x 1 2))
-          pos++;
-          Expression quote = helper(tokens, pos, true);
-          return Quotation(quote);
-        } else if (type == Token::SYMBOL) {
-          // Then it must be normal procedure
-          // Proc
-          Symbol proc_name(*tokens[pos]->value.symbol);
-          pos++;
-          // args
-          List args;
-          while (tokens[pos]->type != Token::RIGHT_PAREN) {
-            Expression arg =
-                helper(tokens, pos, false);  // TODO, 这里应该变成 右值移动
-            args.push_back(arg);
-          }
-          // skip ')'
-          pos++;
-          return Procedure(proc_name, args);
-        }
+      List list;
+      while (tokens[pos].type != Token::RIGHT_PAREN) {
+        Expression expr = First(tokens);
+        list.push_back(expr);
       }
-    } else if (token->type == Token::NUMBER) {
-      return *token->value.number;
+      // skip ')'
+      pos++;
+      return list;
+    } else if (token.type == Token::NUMBER) {
+      return *token.value.number;
     } else  // if(token.type == Token::SYMBOL)
     {
       Symbol* atom = new Symbol();
-      return *token->value.symbol;
+      return *token.value.symbol;
+    }
+    return nullptr;
+  }
+
+  Expression Second(Expression& expr) {
+    if (expr.type == Expression::NUMBER || expr.type == Expression::SYMBOL) {
+      return expr;
+    } else if (expr.type == Expression::LIST) {
+      List list = *expr.value.list;
+      auto type = list[0].type;
+      if (type == Expression::SYMBOL) {
+        auto symbol = *list[0].value.symbol;
+        if (symbol == "define") {
+          // variable is the second
+          Symbol variable(*list[1].value.symbol);
+          // value is the third
+          Expression value = Second(list[2]);
+          return Definition(variable, value);
+        } else if (symbol == "quote") {
+          // quotes is the second
+          Expression value = list[1];
+          return Quotation(value);
+        } else {
+          // it's a procedure
+          Symbol proc_name(symbol);
+          // args
+          List args;
+          for (int i = 1; i < list.size(); i++) {
+            args.push_back(Second(list[i]));
+          }
+          return Procedure(proc_name, args);
+        }
+      }
     }
     return nullptr;
   }

@@ -27,12 +27,11 @@ void repl() {
   while (true) {
     print("1 ]=> ");
     std::string input = read();
-    auto tokens = lexer.Tokenize(input);
+    std::vector<Token> tokens = lexer.Tokenize(input);
     Expression expr = parser.Parse(tokens);
     Expression output = Eval(expr, *environment);
     std::cout << ";Value: " << output;
     print("\n");
-    for (auto& token : tokens) delete token;
   }
   delete environment;
 }

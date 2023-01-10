@@ -112,7 +112,7 @@ Expression::~Expression() {
 std::ostream& operator<<(std::ostream& os, const Expression& expr) {
   switch (expr.type) {
     case Expression::SYMBOL:
-      os << "SYMBOL: " << *expr.value.symbol;
+      os << '"' << *expr.value.symbol << '"';
       break;
     case Expression::NUMBER:
       os << "NUMBER: " << *expr.value.number;
