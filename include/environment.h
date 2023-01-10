@@ -11,15 +11,17 @@ namespace scxx {
 class Environment {
  public:
   Environment();
-  Environment(std::vector<Symbol> variables, std::vector<Expression*> values,
+  Environment(std::vector<Symbol> variables, std::vector<Expression> values,
               Environment* outer_env);
 
-  Expression* Find(Symbol variable);
+  Expression Find(Symbol variable);
 
-  void Insert(Symbol variable, Expression* expression);
+  void Insert(const Symbol& variable, const Expression& expression);
+
+  ~Environment();
 
  private:
-  std::unordered_map<Symbol, Expression*> env;
+  std::unordered_map<Symbol, Expression> env;
   Environment* outer_env;
 };
 }  // namespace scxx

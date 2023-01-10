@@ -7,27 +7,27 @@
 
 namespace scxx {
 // +
-Expression* Add(std::vector<Expression*> exprs);
-Expression* Minus(std::vector<Expression*> exprs);
-Expression* Product(std::vector<Expression*> exprs);
-Expression* Divide(std::vector<Expression*> exprs);
+Expression Add(const List& exprs);
+Expression Minus(const List& exprs);
+Expression Product(const List& exprs);
+Expression Divide(const List& exprs);
 
-Expression* Quote(std::vector<Expression*> exprs);
-Expression* Gt(std::vector<Expression*> exprs);
-Expression* Lt(std::vector<Expression*> exprs);
-Expression* Ge(std::vector<Expression*> exprs);
-Expression* Le(std::vector<Expression*> exprs);
-Expression* Eq(std::vector<Expression*> exprs);
-Expression* Abs(std::vector<Expression*> exprs);
-Expression* Cons(std::vector<Expression*> exprs);
-Expression* Car(std::vector<Expression*> exprs);
-Expression* Cdr(std::vector<Expression*> exprs);
-Expression* SameAddress(std::vector<Expression*> exprs);
-Expression* Max(std::vector<Expression*> exprs);
-Expression* Min(std::vector<Expression*> exprs);
-Expression* Map(std::vector<Expression*> exprs);
-Expression* IsNumber(std::vector<Expression*> exprs);
-Expression* IsProcedure(std::vector<Expression*> exprs);
+Expression Quote(const List& exprs);
+Expression Gt(const List& exprs);
+Expression Lt(const List& exprs);
+Expression Ge(const List& exprs);
+Expression Le(const List& exprs);
+Expression Eq(const List& exprs);
+Expression Abs(const List& exprs);
+Expression Cons(const List& exprs);
+Expression Car(const List& exprs);
+Expression Cdr(const List& exprs);
+Expression SameAddress(const List& exprs);
+Expression Max(const List& exprs);
+Expression Min(const List& exprs);
+Expression Map(const List& exprs);
+Expression IsNumber(const List& exprs);
+Expression IsProcedure(const List& exprs);
 
 Environment* StandardEnv();
 }  // namespace scxx

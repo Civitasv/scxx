@@ -7,6 +7,6 @@ namespace scxx {
 struct Expression;
 using Symbol = std::string;
 using Number = double;
-typedef std::vector<Expression*> List;
-typedef Expression* (*Proc)(std::vector<Expression*>);
+typedef std::vector<Expression> List;
+typedef Expression (*Proc)(const List&);
 }  // namespace scxx

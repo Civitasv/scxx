@@ -12,7 +12,7 @@
 namespace scxx {
 
 struct Token {
-  enum Type { LEFT_PAREN, RIGHT_PAREN, SYMBOL, NUMBER, DEFINITION };
+  enum Type { LEFT_PAREN, RIGHT_PAREN, SYMBOL, NUMBER, DEFINITION, QUOTATION };
   union Value {
     Number* number;
     Symbol* symbol;
@@ -24,9 +24,15 @@ struct Token {
 
   ~Token() {
     if (type == SYMBOL) {
-      if (value.symbol) delete value.symbol;
+      if (value.symbol) {
+        delete value.symbol;
+        value.symbol = nullptr;
+      }
     } else if (type == NUMBER) {
-      if (value.number) delete value.number;
+      if (value.number) {
+        delete value.number;
+        value.number = nullptr;
+      }
     }
   }
 
@@ -49,6 +55,9 @@ struct Token {
         break;
       case Token::DEFINITION:
         os << "DEFINE";
+        break;
+      case Token::QUOTATION:
+        os << "QUOTE";
         break;
       default:
         break;
@@ -78,6 +87,8 @@ class Lexer {
         tokens.push_back(new Token(Token::RIGHT_PAREN));
       } else if (s == "define") {
         tokens.push_back(new Token(Token::DEFINITION));
+      } else if (s == "quote") {
+        tokens.push_back(new Token(Token::QUOTATION));
       } else if (cv_string::IsNumber(s)) {
         tokens.push_back(new Token(new Number(std::stod(s))));
       } else {

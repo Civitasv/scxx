@@ -28,11 +28,13 @@ void repl() {
     print("1 ]=> ");
     std::string input = read();
     auto tokens = lexer.Tokenize(input);
-    auto expr = parser.Parse(tokens);
-    auto output = Eval(expr, environment);
-    std::cout << ";Value: " << *output;
+    Expression expr = parser.Parse(tokens);
+    Expression output = Eval(expr, *environment);
+    std::cout << ";Value: " << output;
     print("\n");
+    for (auto& token : tokens) delete token;
   }
+  delete environment;
 }
 
 void parse(int argc, const char* argv[]) {

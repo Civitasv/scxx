@@ -1,12 +1,12 @@
 #include "environment.h"
 
 #include "error.h"
+#include "expression.h"
 
 namespace scxx {
 Environment::Environment() {}
 Environment::Environment(std::vector<Symbol> variables,
-                         std::vector<Expression*> values,
-                         Environment* outer_env)
+                         std::vector<Expression> values, Environment* outer_env)
     : outer_env(outer_env) {
   if (variables.size() != values.size()) {
     Error("The size of variables must be equal to the size of values!");
@@ -16,7 +16,7 @@ Environment::Environment(std::vector<Symbol> variables,
   }
 }
 
-Expression* Environment::Find(Symbol variable) {
+Expression Environment::Find(Symbol variable) {
   if (env.find(variable) != env.end())
     return env[variable];
   else if (outer_env)
@@ -25,8 +25,9 @@ Expression* Environment::Find(Symbol variable) {
     return nullptr;
 }
 
-void Environment::Insert(Symbol variable, Expression* expression) {
+void Environment::Insert(const Symbol& variable, const Expression& expression) {
   env[variable] = expression;
 }
 
+Environment::~Environment() {}
 }  // namespace scxx

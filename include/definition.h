@@ -9,7 +9,8 @@ struct Definition {
   Symbol* variable;
   Expression* value;
 
-  Definition(Symbol* variable, Expression* value);
+  Definition(const Symbol& variable, const Expression& value);
+  Definition(const Definition& definition);
 
   ~Definition();
 

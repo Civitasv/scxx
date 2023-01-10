@@ -5,5 +5,5 @@
 #include "expression.h"
 
 namespace scxx {
-Expression* Eval(Expression* expr, scxx::Environment* env);
+Expression Eval(const Expression& expr, Environment& env);
 }  // namespace scxx

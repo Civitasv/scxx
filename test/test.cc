@@ -30,11 +30,10 @@ TEST(SCXX, PARSER_1) {
   auto tokens = lexer.Tokenize(source);
   Parser parser;
 
-  Expression* expr = parser.Parse(tokens);
-  std::cout << *expr << '\n';
+  Expression expr = parser.Parse(tokens);
+  std::cout << expr << '\n';
 
   for (auto& token : tokens) delete token;
-  delete expr;
   EXPECT_EQ(1, 1);
 }
 
@@ -44,11 +43,10 @@ TEST(SCXX, PARSER_2) {
   auto tokens = lexer.Tokenize(source);
   Parser parser;
 
-  Expression* expr = parser.Parse(tokens);
-  std::cout << *expr << '\n';
+  Expression expr = parser.Parse(tokens);
+  std::cout << expr << '\n';
 
   for (auto& token : tokens) delete token;
-  delete expr;
   EXPECT_EQ(1, 1);
 }
 
@@ -58,10 +56,35 @@ TEST(SCXX, PARSER_3) {
   auto tokens = lexer.Tokenize(source);
   Parser parser;
 
-  Expression* expr = parser.Parse(tokens);
-  std::cout << *expr << '\n';
+  Expression expr = parser.Parse(tokens);
+  std::cout << expr << '\n';
 
   for (auto& token : tokens) delete token;
-  delete expr;
+  EXPECT_EQ(1, 1);
+}
+
+TEST(SCXX, PARSER_4) {
+  std::string source = "(quote 1)";
+  Lexer lexer;
+  auto tokens = lexer.Tokenize(source);
+  Parser parser;
+
+  Expression expr = parser.Parse(tokens);
+  std::cout << expr << '\n';
+
+  for (auto& token : tokens) delete token;
+  EXPECT_EQ(1, 1);
+}
+
+TEST(SCXX, PARSER_5) {
+  std::string source = "(quote (1 2))";
+  Lexer lexer;
+  auto tokens = lexer.Tokenize(source);
+  Parser parser;
+
+  Expression expr = parser.Parse(tokens);
+  std::cout << expr << '\n';
+
+  for (auto& token : tokens) delete token;
   EXPECT_EQ(1, 1);
 }

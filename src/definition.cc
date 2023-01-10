@@ -3,8 +3,15 @@
 #include "expression.h"
 
 namespace scxx {
-Definition::Definition(Symbol* variable, Expression* value)
-    : variable(variable), value(value) {}
+Definition::Definition(const Symbol& variable, const Expression& value)
+    : variable(new Symbol(variable)), value(new Expression(value)) {}
+
+Definition::Definition(const Definition& definition) {
+  variable = new Symbol(*definition.variable);
+  value = new Expression(
+      *definition.value);  // I even cannot invoke Definition constructor from
+                           // this copy constructor, what a weird choice.
+}
 
 std::ostream& operator<<(std::ostream& os, const Definition& definition) {
   os << "define: " << *definition.variable << " ";
@@ -13,7 +20,13 @@ std::ostream& operator<<(std::ostream& os, const Definition& definition) {
 }
 
 Definition::~Definition() {
-  if (variable) delete variable;
-  if (value) delete value;
+  if (variable) {
+    delete variable;
+    variable = nullptr;
+  }
+  if (value) {
+    delete value;
+    value = nullptr;
+  }
 }
 }  // namespace scxx
