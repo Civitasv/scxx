@@ -37,7 +37,7 @@ void repl() {
 }
 
 void parse(int argc, const char* argv[]) {
-  cxxopts::Options options(argv[0], "Scheme Compiler in C++");
+  cxxopts::Options options(argv[0], "Scheme Interpreter in C++");
 
   // clang-format off
   options.add_options()
