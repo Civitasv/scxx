@@ -6,8 +6,6 @@ Program => Scanner => Tokens => Parser => AST => Eval => Result
 
 ### Scanner
 
-TODO
-
 又称词法分析(lexical analysis)，用于扫描字符串，获得所有 tokens.
 
 Example:
@@ -19,14 +17,10 @@ Implementation:
 
 ### Parser
 
-TODO
-
 Get Abstract syntax tree.
 And get syntax errors.
 
 ### Static analysis
-
-TODO
 
 类型。
 
