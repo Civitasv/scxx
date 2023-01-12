@@ -26,22 +26,34 @@ Expression::Expression(const Expression& expr) {
         value.number = new Number(*expr.value.number);
       }
       break;
-    case Expression::DEFINITION:
-      if (expr.value.definition) {
-        type = DEFINITION;
-        value.definition = new Definition(*expr.value.definition);
-      }
-      break;
     case Expression::QUOTATION:
       if (expr.value.quotation) {
         type = QUOTATION;
         value.quotation = new Quotation(*expr.value.quotation);
       }
       break;
+    case Expression::CONDITION:
+      if (expr.value.condition) {
+        type = CONDITION;
+        value.condition = new Condition(*expr.value.condition);
+      }
+      break;
+    case Expression::DEFINITION:
+      if (expr.value.definition) {
+        type = DEFINITION;
+        value.definition = new Definition(*expr.value.definition);
+      }
+      break;
     case Expression::CALL:
       if (expr.value.call) {
         type = CALL;
         value.call = new Call(*expr.value.call);
+      }
+      break;
+    case Expression::PRIMITIVE:
+      if (expr.value.primitive) {
+        type = PRIMITIVE;
+        value.primitive = new Primitive(*expr.value.primitive);
       }
       break;
     case Expression::PROCEDURE:
@@ -54,12 +66,6 @@ Expression::Expression(const Expression& expr) {
       if (expr.value.list) {
         type = LIST;
         value.list = new List(*expr.value.list);
-      }
-      break;
-    case Expression::PRIMITIVE:
-      if (expr.value.primitive) {
-        type = PRIMITIVE;
-        value.primitive = new Primitive(*expr.value.primitive);
       }
       break;
     default:
