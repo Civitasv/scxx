@@ -118,9 +118,13 @@ Expression Cons(const List& exprs) {
   return Quotation(list);
 }
 
-Expression Car(const List& exprs) { return (*exprs[0].value.list)[0]; }
+Expression Car(const List& exprs) {
+  return (*exprs[0].value.quotation->quotes->value.list)[0];
+}
 
-Expression Cdr(const List& exprs) { return (*exprs[0].value.list)[1]; }
+Expression Cdr(const List& exprs) {
+  return (*exprs[0].value.quotation->quotes->value.list)[1];
+}
 
 Expression Max(const List& exprs) {
   double max = *(exprs[0].value.number);
