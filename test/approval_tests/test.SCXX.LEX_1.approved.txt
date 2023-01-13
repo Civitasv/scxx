@@ -1,0 +1,13 @@
+TOKENS
+
+
+[0] = (
+[1] = SYMBOL: +
+[2] = (
+[3] = SYMBOL: +
+[4] = NUMBER: 1
+[5] = NUMBER: 2
+[6] = )
+[7] = NUMBER: 2
+[8] = )
+
