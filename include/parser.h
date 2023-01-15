@@ -108,6 +108,8 @@ class Parser {
         for (int i = 1; i < list.size(); i++) {
           args.push_back(ExtractList(list[i]));
         }
+        // TODO: Add a lambda type, ((lambda (x) x) 2) => (lambda (x) x) is the
+        // proc_name
         return Call(proc_name, args);
       }
     }

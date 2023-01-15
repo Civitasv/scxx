@@ -13,5 +13,3 @@ target_include_directories(test_cv_string PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 gtest_discover_tests(test)
 gtest_discover_tests(test_cv_string)
-
-add_test(NAME test COMMAND test)
