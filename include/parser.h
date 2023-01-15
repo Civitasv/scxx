@@ -1,10 +1,12 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 
 #include "definition.h"
 #include "error.h"
 #include "expression.h"
+#include "fmt/core.h"
 #include "lexer.h"
 #include "type.h"
 
@@ -30,12 +32,12 @@ class Parser {
   /// @return Expression
   Expression ResolveTokens(std::vector<Token> tokens) {
     if (tokens.size() == pos) {
-      Error("Unexpected EOF");
+      panic("Unexpected EOF");
     }
     Token token = tokens[pos++];
     if (token.type == Token::RIGHT_PAREN) {
       // if it is ')'
-      Error("Syntax error: )");
+      panic("Syntax error: )");
     } else if (token.type == Token::LEFT_PAREN) {  // Expression
       // if it is '(', go on until we met ')'
       List list;
@@ -67,6 +69,11 @@ class Parser {
       return expr;
     } else if (expr.type == Expression::LIST) {
       List list = *expr.value.list;
+      // What if it is empty?
+      if (list.empty()) {
+        return Quotation(List{});
+      }
+
       auto type = list[0].type;
       if (type == Expression::LIST) {
         // ((lambda (x) x) 2)
@@ -88,15 +95,24 @@ class Parser {
         Expression alternative = ExtractList(list[3]);
         return Condition(predicate, consequent, alternative);
       } else if (symbol == "define") {
+        // (define symbol expression)
         Symbol variable(*list[1].value.symbol);
         Expression value = ExtractList(list[2]);
         return Definition(variable, value);
       } else if (symbol == "quote") {
+        // (quote expression)
         Expression value = list[1];
         return Quotation(value);
       } else if (symbol == "lambda") {
+        // (lambda (p1 p2 p3) expr1 expr2 ...)
         // parameters
+        if (list.size() < 3) {
+          panic(fmt::format("illed form of lambda: {}", expr.Dump()));
+        }
         Expression expr1 = list[1];
+        if (expr1.type != Expression::LIST){
+          panic(fmt::format("illed form of lambda: {}", expr.Dump()));
+        }
         std::vector<Symbol> parameters;
         for (auto& item : *expr1.value.list) {
           parameters.push_back(*item.value.symbol);

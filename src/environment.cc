@@ -9,7 +9,7 @@ Environment::Environment(std::vector<Symbol> variables, List values,
                          Environment* outer_env)
     : outer_env(outer_env) {
   if (variables.size() != values.size()) {
-    Error("The size of variables must be equal to the size of values!");
+    panic("The size of variables must be equal to the size of values!");
   }
   for (int i = 0; i < variables.size(); i++) {
     Insert(variables[i], values[i]);

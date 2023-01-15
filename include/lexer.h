@@ -91,6 +91,9 @@ class Lexer {
   /// @brief 进行词法分析，获取所有 tokens.
   /// @return 所有 tokens.
   std::vector<Token> Tokenize(std::string& source) {
+    if (source == "") {
+      return {};
+    }
     // 1. split the source by whitespace
     cv_string::Replace(source, "(", " ( ");
     cv_string::Replace(source, ")", " ) ");

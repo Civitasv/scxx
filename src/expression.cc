@@ -1,5 +1,9 @@
 #include "expression.h"
 
+#include <fmt/core.h>
+
+#include <sstream>
+
 #include "call.h"
 #include "condition.h"
 #include "definition.h"
@@ -9,7 +13,6 @@
 #include "type.h"
 
 namespace scxx {
-
 Expression::Expression() {}
 
 Expression::Expression(const Expression& expr) {
@@ -154,7 +157,7 @@ Expression::~Expression() {
 std::ostream& operator<<(std::ostream& os, const Expression& expr) {
   switch (expr.type) {
     case Expression::SYMBOL:
-      os << '"' << *expr.value.symbol << '"';
+      os << *expr.value.symbol;
       break;
     case Expression::NUMBER:
       os << *expr.value.number;
@@ -193,5 +196,11 @@ std::ostream& operator<<(std::ostream& os, const Expression& expr) {
       break;
   }
   return os;
+}
+
+std::string Expression::Dump() {
+  std::stringstream ss;
+  ss << *this;
+  return ss.str();
 }
 }  // namespace scxx

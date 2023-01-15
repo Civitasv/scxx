@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <sstream>
 
 #include "cxxopts/cxxopts.hpp"
 #include "environment.h"
@@ -11,9 +12,10 @@
 #include "cv_string.h"
 
 std::string read() {
-  std::string source;
-  getline(std::cin, source);
-  return source;
+  std::string line;
+  getline(std::cin, line);
+  if (line.find_first_not_of(" ") == std::string::npos) return "";
+  return line;
 }
 
 void print(const std::string& message) { std::cout << message; }
@@ -26,8 +28,17 @@ void repl() {
   // read, eval, print, loop
   while (true) {
     print("1 ]=> ");
-    std::string input = read();
-    std::vector<Token> tokens = lexer.Tokenize(input);
+    std::stringstream input;
+    input << read();
+    if (input.str().at(0) == '(') {
+      while (input.str().at(input.str().size() - 1) != ')') {
+        input << read();
+      }
+    }
+
+    std::string source = input.str();
+    if (source.empty()) continue;
+    std::vector<Token> tokens = lexer.Tokenize(source);
     Expression expr = parser.Parse(tokens);
     Expression output = Eval(expr, environment);
     std::cout << ";Value: " << output;

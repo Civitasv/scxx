@@ -5,8 +5,8 @@
 #include <string>
 
 namespace scxx {
-inline void Error(const std::string& message) {
-  std::cerr << message << '\n';
-  throw std::runtime_error(message);
+inline void panic(const std::string& message) {
+  std::cerr << "panic! " << message << '\n';
+  exit(1);
 }
 }  // namespace scxx

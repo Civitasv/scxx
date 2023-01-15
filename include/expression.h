@@ -76,5 +76,6 @@ struct Expression {
   Value value;
 
   friend std::ostream& operator<<(std::ostream& os, const Expression& expr);
+  std::string Dump();
 };
 }  // namespace scxx
