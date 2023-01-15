@@ -68,8 +68,16 @@ class Parser {
     } else if (expr.type == Expression::LIST) {
       List list = *expr.value.list;
       auto type = list[0].type;
-      if (type != Expression::SYMBOL) {
-        return {};
+      if (type == Expression::LIST) {
+        // ((lambda (x) x) 2)
+        Expression prc = ExtractList(list[0]);
+
+        // args
+        List args;
+        for (int i = 1; i < list.size(); i++) {
+          args.push_back(ExtractList(list[i]));
+        }
+        return Call(prc, args);
       }
       auto symbol = *list[0].value.symbol;
 
@@ -108,8 +116,7 @@ class Parser {
         for (int i = 1; i < list.size(); i++) {
           args.push_back(ExtractList(list[i]));
         }
-        // TODO: Add a lambda type, ((lambda (x) x) 2) => (lambda (x) x) is the
-        // proc_name
+
         return Call(proc_name, args);
       }
     }

@@ -36,8 +36,10 @@ Expression Eval(const Expression& expr, Environment* env) {
   } else if (expr.type == Expression::CALL) {
     Call* call = expr.value.call;
     // 1. the function
-    Symbol* proc_name = call->proc_name;
-    const Expression& expr = env->Find(*proc_name);
+    Expression* proc = call->proc;
+    const Expression& expr = proc->type == Expression::SYMBOL
+                                 ? env->Find(*proc->value.symbol)
+                                 : *proc->value.procedure;
 
     // 2. the args
     List args;

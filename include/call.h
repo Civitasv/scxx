@@ -6,11 +6,11 @@
 
 namespace scxx {
 struct Call {
-  Symbol* proc_name;
+  Expression* proc;
   List* args;
 
   Call();
-  Call(const Symbol& proc_name, const List& args);
+  Call(const Expression& proc, const List& args);
   Call(const Call& call);
 
   ~Call();

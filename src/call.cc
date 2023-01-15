@@ -5,18 +5,18 @@
 #include "expression.h"
 
 namespace scxx {
-Call::Call() : proc_name(nullptr), args(nullptr) {}
+Call::Call() : proc(nullptr), args(nullptr) {}
 
-Call::Call(const Symbol& proc_name, const List& args)
-    : proc_name(new Symbol(proc_name)), args(new List(args)) {}
+Call::Call(const Expression& proc, const List& args)
+    : proc(new Expression(proc)), args(new List(args)) {}
 
 Call::Call(const Call& call) {
-  proc_name = new Symbol(*call.proc_name);
+  proc = new Expression(*call.proc);
   args = new List(*call.args);
 }
 
 std::ostream& operator<<(std::ostream& os, const Call& call) {
-  os << "[Call: " << *call.proc_name << " ";
+  os << "[Call: " << *call.proc << " ";
   os << "Args: ";
   for (auto& item : *call.args) {
     os << item << " ";
@@ -26,9 +26,9 @@ std::ostream& operator<<(std::ostream& os, const Call& call) {
 }
 
 Call::~Call() {
-  if (proc_name) {
-    delete proc_name;
-    proc_name = nullptr;
+  if (proc) {
+    delete proc;
+    proc = nullptr;
   }
   if (args) {
     delete args;
