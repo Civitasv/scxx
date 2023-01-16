@@ -17,7 +17,7 @@ class Parser {
   bool quotation;
 
  public:
-  Expression Parse(std::vector<Token> tokens) {
+  Expression Parse(std::vector<Token>& tokens) {
     pos = 0;
     quotation = false;
     Expression expr = ResolveTokens(tokens);
@@ -30,7 +30,7 @@ class Parser {
   /// 将 tokens 解析为 Call 和 Atom(Symbol & Number)
   /// @param tokens
   /// @return Expression
-  Expression ResolveTokens(std::vector<Token> tokens) {
+  Expression ResolveTokens(std::vector<Token>& tokens) {
     if (tokens.size() == pos) {
       panic("Unexpected EOF");
     }
@@ -49,11 +49,10 @@ class Parser {
       pos++;
       return list;
     } else if (token.type == Token::NUMBER) {
-      return *token.value.number;
+      return std::get<Number>(token.value);
     } else  // if(token.type == Token::SYMBOL)
     {
-      Symbol* atom = new Symbol();
-      return *token.value.symbol;
+      return std::get<Symbol>(token.value);
     }
     return {};
   }
@@ -68,7 +67,7 @@ class Parser {
     if (expr.type == Expression::NUMBER || expr.type == Expression::SYMBOL) {
       return expr;
     } else if (expr.type == Expression::LIST) {
-      List list = *expr.value.list;
+      List list = *expr.AsList();
       // What if it is empty?
       if (list.empty()) {
         return Quotation(List{});
@@ -86,7 +85,7 @@ class Parser {
         }
         return Call(prc, args);
       }
-      auto symbol = *list[0].value.symbol;
+      auto symbol = *list[0].AsSymbol();
 
       if (symbol == "if") {
         // (if (> 2 1) (* x x) (* x 2))
@@ -96,7 +95,7 @@ class Parser {
         return Condition(predicate, consequent, alternative);
       } else if (symbol == "define") {
         // (define symbol expression)
-        Symbol variable(*list[1].value.symbol);
+        Symbol variable(*list[1].AsSymbol());
         Expression value = ExtractList(list[2]);
         return Definition(variable, value);
       } else if (symbol == "quote") {
@@ -110,12 +109,12 @@ class Parser {
           panic(fmt::format("illed form of lambda: {}", expr.Dump()));
         }
         Expression expr1 = list[1];
-        if (expr1.type != Expression::LIST){
+        if (expr1.type != Expression::LIST) {
           panic(fmt::format("illed form of lambda: {}", expr.Dump()));
         }
         std::vector<Symbol> parameters;
-        for (auto& item : *expr1.value.list) {
-          parameters.push_back(*item.value.symbol);
+        for (auto& item : *expr1.AsList()) {
+          parameters.push_back(*item.AsSymbol());
         }
         // body
         List body;

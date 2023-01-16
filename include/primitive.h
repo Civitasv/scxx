@@ -6,19 +6,22 @@
 
 namespace scxx {
 struct Primitive {
-  Symbol* proc_name;
+  std::unique_ptr<Symbol> proc_name;
   Proc proc;
 
   Primitive();
   Primitive(const Symbol& proc_name, const Proc& proc);
-  Primitive(const Primitive& primitive);
+  Primitive(Symbol&& proc_name, Proc&& proc);
 
-  ~Primitive();
+  Primitive(const Primitive& primitive);
+  Primitive(Primitive&& primitive);
+
+  Primitive& operator=(const Primitive& primitive);
+  Primitive& operator=(Primitive&& primitive);
 
   friend std::ostream& operator<<(std::ostream& os, const Primitive& primitive);
 };
 
-// +
 Expression Add(const List& exprs);
 Expression Minus(const List& exprs);
 Expression Product(const List& exprs);

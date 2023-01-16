@@ -6,14 +6,17 @@
 
 namespace scxx {
 struct Quotation {
-  Expression* quotes;
+  std::unique_ptr<Expression> quotes;
 
   Quotation();
   Quotation(const Expression& expr);
+  Quotation(Expression&& expr);
 
   Quotation(const Quotation& quotation);
+  Quotation(Quotation&& quotation);
 
-  ~Quotation();
+  Quotation& operator=(const Quotation& quotation);
+  Quotation& operator=(Quotation&& quotation);
 
   friend std::ostream& operator<<(std::ostream& os, const Quotation& quotation);
 };

@@ -6,14 +6,21 @@
 
 namespace scxx {
 struct Call {
-  Expression* proc;
-  List* args;
+  std::unique_ptr<Expression> proc;
+  std::unique_ptr<List> args;
 
   Call();
   Call(const Expression& proc, const List& args);
+  Call(Expression&& proc, List&& args);
+  // copy constructor
   Call(const Call& call);
+  // move constructor
+  Call(Call&& call);
 
-  ~Call();
+  // copy assignment
+  Call& operator=(const Call& call);
+  // move assignment
+  Call& operator=(Call&& call);
 
   friend std::ostream& operator<<(std::ostream& os, const Call& call);
 };

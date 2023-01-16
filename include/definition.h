@@ -6,13 +6,17 @@
 
 namespace scxx {
 struct Definition {
-  Symbol* variable;
-  Expression* value;
+  std::unique_ptr<Symbol> variable;
+  std::unique_ptr<Expression> value;
 
   Definition(const Symbol& variable, const Expression& value);
-  Definition(const Definition& definition);
+  Definition(Symbol&& variable, Expression&& value);
 
-  ~Definition();
+  Definition(const Definition& definition);
+  Definition(Definition&& definition);
+
+  Definition& operator=(const Definition& definition);
+  Definition& operator=(Definition&& definition);
 
   friend std::ostream& operator<<(std::ostream& os,
                                   const Definition& definition);

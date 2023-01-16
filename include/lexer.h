@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include "cv_string.h"
@@ -12,24 +13,42 @@
 namespace scxx {
 
 struct Token {
-  enum Type { LEFT_PAREN, RIGHT_PAREN, SYMBOL, NUMBER };
-  union Value {
-    Number* number;
-    Symbol* symbol;
-  };
+  enum Type { LEFT_PAREN, RIGHT_PAREN, SYMBOL, NUMBER } type;
+
+  std::variant<Number, Symbol> value;
 
   Token(const Token& token) {
     switch (token.type) {
       case NUMBER:
-        if (token.value.number) {
+        if (const Number* v = std::get_if<Number>(&token.value)) {
           type = NUMBER;
-          value.number = new Number(*token.value.number);
+          value = *v;
         }
         break;
       case SYMBOL:
-        if (token.value.symbol) {
+        if (const Symbol* v = std::get_if<Symbol>(&token.value)) {
           type = SYMBOL;
-          value.symbol = new Symbol(*token.value.symbol);
+          value = *v;
+        }
+        break;
+      default:
+        type = token.type;
+        break;
+    }
+  }
+
+  Token(Token&& token) {
+    switch (token.type) {
+      case NUMBER:
+        if (Number* v = std::get_if<Number>(&token.value)) {
+          type = NUMBER;
+          value = std::move(*v);
+        }
+        break;
+      case SYMBOL:
+        if (Symbol* v = std::get_if<Symbol>(&token.value)) {
+          type = SYMBOL;
+          value = std::move(*v);
         }
         break;
       default:
@@ -39,29 +58,11 @@ struct Token {
   }
 
   Token(Type type) : type(type) {}
-  Token(const Symbol& symbol) : type(SYMBOL) {
-    value.symbol = new Symbol(symbol);
-  }
-  Token(const Number& number) : type(NUMBER) {
-    value.number = new Number(number);
-  }
+  Token(const Symbol& symbol) : type(SYMBOL) { value = symbol; }
+  Token(const Number& number) : type(NUMBER) { value = number; }
 
-  ~Token() {
-    if (type == SYMBOL) {
-      if (value.symbol) {
-        delete value.symbol;
-        value.symbol = nullptr;
-      }
-    } else if (type == NUMBER) {
-      if (value.number) {
-        delete value.number;
-        value.number = nullptr;
-      }
-    }
-  }
-
-  Type type;
-  Value value;
+  Token(Symbol&& symbol) : type(SYMBOL) { value = std::move(symbol); }
+  Token(Number&& number) : type(NUMBER) { value = std::move(number); }
 
   friend std::ostream& operator<<(std::ostream& os, const Token& token) {
     switch (token.type) {
@@ -72,10 +73,10 @@ struct Token {
         os << ")";
         break;
       case Token::SYMBOL:
-        os << "SYMBOL: " << *token.value.symbol;
+        std::visit([&os](auto&& arg) { os << "SYMBOL: " << arg; }, token.value);
         break;
       case Token::NUMBER:
-        os << "NUMBER: " << *token.value.number;
+        std::visit([&os](auto&& arg) { os << "NUMBER: " << arg; }, token.value);
         break;
       default:
         break;

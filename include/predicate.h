@@ -4,7 +4,7 @@
 #include "type.h"
 
 namespace scxx {
-inline bool IsFalse(Expression* expr) { return *expr->value.symbol == "#f"; }
+inline bool IsFalse(Expression* expr) { return *expr->AsSymbol() == "#f"; }
 
-inline bool IsTrue(Expression* expr) { return *expr->value.symbol != "#f"; }
+inline bool IsTrue(Expression* expr) { return *expr->AsSymbol() != "#f"; }
 }  // namespace scxx

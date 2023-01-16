@@ -10,36 +10,36 @@ Expression Eval(const Expression& expr, Environment* env) {
     // just just return it
     return expr;
   } else if (expr.type == Expression::SYMBOL) {
-    return env->Find(*expr.value.symbol);
+    return env->Find(*expr.AsSymbol());
   } else if (expr.type == Expression::CONDITION) {
-    Expression predicate = Eval(*expr.value.condition->predicate, env);
+    Expression predicate = Eval(*expr.AsCondition()->predicate, env);
     if (IsTrue(&predicate)) {
-      return Eval(*expr.value.condition->consequent, env);
+      return Eval(*expr.AsCondition()->consequent, env);
     } else {
-      return Eval(*expr.value.condition->alternative, env);
+      return Eval(*expr.AsCondition()->alternative, env);
     }
   } else if (expr.type == Expression::DEFINITION) {
     // 1. retrieve the variable
-    Symbol* variable = expr.value.definition->variable;
+    auto variable = expr.AsDefinition()->variable.get();
 
     // 2. retrieve the value
-    Expression value = Eval((*expr.value.definition->value), env);
+    Expression value = Eval((*expr.AsDefinition()->value), env);
 
     env->Insert(*variable, value);
     return *variable;
   } else if (expr.type == Expression::QUOTATION) {
-    return *expr.value.quotation->quotes;
+    return *expr.AsQuotation()->quotes;
   } else if (expr.type == Expression::PROCEDURE) {
-    Procedure* proc = expr.value.procedure;
+    Procedure* proc = expr.AsProcedure();
     proc->env = env;
     return *proc;
   } else if (expr.type == Expression::CALL) {
-    Call* call = expr.value.call;
+    Call* call = expr.AsCall();
     // 1. the function
-    Expression* proc = call->proc;
+    Expression* proc = call->proc.get();
     const Expression& expr = proc->type == Expression::SYMBOL
-                                 ? env->Find(*proc->value.symbol)
-                                 : *proc->value.procedure;
+                                 ? env->Find(*proc->AsSymbol())
+                                 : *proc->AsProcedure();
 
     // 2. the args
     List args;
@@ -48,15 +48,15 @@ Expression Eval(const Expression& expr, Environment* env) {
     }
 
     if (expr.type == Expression::PROCEDURE) {
-      List* body = expr.value.procedure->body;
-      std::vector<Symbol>* params = expr.value.procedure->params;
+      auto body = expr.AsProcedure()->body.get();
+      auto params = expr.AsProcedure()->params.get();
       Environment this_env(*params, args, env);
       for (int i = 0; i < body->size() - 1; i++) {
         Eval(body->at(i), &this_env);
       }
       return Eval(body->at(body->size() - 1), &this_env);
     } else if (expr.type == Expression::PRIMITIVE) {
-      Proc proc = expr.value.primitive->proc;
+      Proc proc = expr.AsPrimitive()->proc;
       return proc(args);
     }
   }

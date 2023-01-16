@@ -8,11 +8,28 @@ namespace scxx {
 Primitive::Primitive() : proc_name(nullptr), proc(nullptr) {}
 
 Primitive::Primitive(const Symbol& proc_name, const Proc& proc)
-    : proc_name(new Symbol(proc_name)), proc(proc) {}
+    : proc_name(std::make_unique<Symbol>(proc_name)), proc(proc) {}
 
-Primitive::Primitive(const Primitive& primitive) {
-  proc_name = new Symbol(*primitive.proc_name);
+Primitive::Primitive(Symbol&& proc_name, Proc&& proc)
+    : proc_name(std::make_unique<Symbol>(std::move(proc_name))), proc(proc) {}
+
+Primitive::Primitive(const Primitive& primitive)
+    : proc_name(std::make_unique<Symbol>(*primitive.proc_name)),
+      proc(primitive.proc) {}
+
+Primitive::Primitive(Primitive&& primitive)
+    : proc_name(std::move(primitive.proc_name)), proc(primitive.proc) {}
+
+Primitive& Primitive::operator=(const Primitive& primitive) {
+  proc_name = std::make_unique<Symbol>(*primitive.proc_name);
   proc = primitive.proc;
+  return *this;
+}
+
+Primitive& Primitive::operator=(Primitive&& primitive) {
+  proc_name = std::move(primitive.proc_name);
+  proc = primitive.proc;
+  return *this;
 }
 
 std::ostream& operator<<(std::ostream& os, const Primitive& primitive) {
@@ -20,26 +37,19 @@ std::ostream& operator<<(std::ostream& os, const Primitive& primitive) {
   return os;
 }
 
-Primitive::~Primitive() {
-  if (proc_name) {
-    delete proc_name;
-    proc_name = nullptr;
-  }
-}
-
 Expression Add(const List& exprs) {
   double d = 0.0;
   for (auto& expr : exprs) {
-    d += *(expr.value.number);
+    d += *expr.AsNumber();
   }
   return d;
 }
 
 Expression Minus(const List& exprs) {
-  double d = *exprs[0].value.number;
+  double d = *exprs[0].AsNumber();
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
-    d -= *(expr.value.number);
+    d -= *(expr.AsNumber());
   }
   return d;
 }
@@ -47,67 +57,67 @@ Expression Minus(const List& exprs) {
 Expression Product(const List& exprs) {
   double d = 1.0;
   for (auto& expr : exprs) {
-    d *= *(expr.value.number);
+    d *= *(expr.AsNumber());
   }
   return d;
 }
 
 Expression Divide(const List& exprs) {
-  double d = *exprs[0].value.number;
+  double d = *exprs[0].AsNumber();
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
-    d /= *(expr.value.number);
+    d /= *(expr.AsNumber());
   }
   return d;
 }
 
 Expression Gt(const List& exprs) {
-  double d = *exprs[0].value.number;
+  double d = *exprs[0].AsNumber();
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
-    if (d <= *(expr.value.number)) return Symbol("#f");
+    if (d <= *(expr.AsNumber())) return Symbol("#f");
   }
   return Symbol("#t");
 }
 
 Expression Lt(const List& exprs) {
-  double d = *(exprs[0].value.number);
+  double d = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
-    if (d >= *(expr.value.number)) return Symbol("#f");
+    if (d >= *(expr.AsNumber())) return Symbol("#f");
   }
   return Symbol("#t");
 }
 
 Expression Ge(const List& exprs) {
-  double d = *(exprs[0].value.number);
+  double d = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
-    if (d < *(expr.value.number)) return Symbol("#f");
+    if (d < *(expr.AsNumber())) return Symbol("#f");
   }
   return Symbol("#t");
 }
 
 Expression Le(const List& exprs) {
-  double d = *(exprs[0].value.number);
+  double d = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
-    if (d > *(expr.value.number)) return Symbol("#f");
+    if (d > *(expr.AsNumber())) return Symbol("#f");
   }
   return Symbol("#t");
 }
 
 Expression Eq(const List& exprs) {
-  double d = *(exprs[0].value.number);
+  double d = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
-    if (d != *(expr.value.number)) return Symbol("#f");
+    if (d != *(expr.AsNumber())) return Symbol("#f");
   }
   return Symbol("#t");
 }
 
 Expression Abs(const List& exprs) {
-  double d = std::abs(*(exprs[0].value.number));
+  double d = std::abs(*(exprs[0].AsNumber()));
   return d;
 }
 
@@ -119,33 +129,33 @@ Expression Cons(const List& exprs) {
 }
 
 Expression Car(const List& exprs) {
-  return (*exprs[0].value.quotation->quotes->value.list)[0];
+  return (*exprs[0].AsQuotation()->quotes->AsList())[0];
 }
 
 Expression Cdr(const List& exprs) {
-  return (*exprs[0].value.quotation->quotes->value.list)[1];
+  return (*exprs[0].AsQuotation()->quotes->AsList())[1];
 }
 
 Expression Max(const List& exprs) {
-  double max = *(exprs[0].value.number);
+  double max = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
-    if (max < *(expr.value.number)) max = *(expr.value.number);
+    if (max < *(expr.AsNumber())) max = *(expr.AsNumber());
   }
   return max;
 }
 
 Expression Min(const List& exprs) {
-  double min = *(exprs[0].value.number);
+  double min = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
-    if (min > *(expr.value.number)) min = *(expr.value.number);
+    if (min > *(expr.AsNumber())) min = *(expr.AsNumber());
   }
   return min;
 }
 
 Expression Empty(const List& exprs) {
-  List list = *exprs[0].value.list;
+  List list = *exprs[0].AsList();
   return list.size() == 0 ? Symbol("#t") : Symbol("#f");
 }
 
