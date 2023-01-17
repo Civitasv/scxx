@@ -33,7 +33,7 @@ Primitive& Primitive::operator=(Primitive&& primitive) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Primitive& primitive) {
-  os << "[Primitive: " << *primitive.proc_name << " ";
+  os << "[Primitive: " << *primitive.proc_name << "]";
   return os;
 }
 

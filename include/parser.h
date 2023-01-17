@@ -37,7 +37,7 @@ class Parser {
     Token token = tokens[pos++];
     if (token.type == Token::RIGHT_PAREN) {
       // if it is ')'
-      panic("Syntax error: )");
+      panic(fmt::format("Syntax error: {}", ')'));
     } else if (token.type == Token::LEFT_PAREN) {  // Expression
       // if it is '(', go on until we met ')'
       List list;
@@ -68,16 +68,18 @@ class Parser {
       return expr;
     } else if (expr.type == Expression::LIST) {
       List list = *expr.AsList();
-      // What if it is empty?
+      // What if it is empty, like (), then return an empty list
       if (list.empty()) {
         return Quotation(List{});
       }
 
       auto type = list[0].type;
       if (type == Expression::LIST) {
-        // ((lambda (x) x) 2)
+        // it should be ((lambda (x) x) 2)
         Expression prc = ExtractList(list[0]);
-
+        if (prc.type != Expression::LAMBDA) {
+          panic(fmt::format("illed form of expression: {}", expr.Dump()));
+        }
         // args
         List args;
         for (int i = 1; i < list.size(); i++) {
@@ -85,21 +87,33 @@ class Parser {
         }
         return Call(prc, args);
       }
+      if (type != Expression::SYMBOL) {
+        panic(fmt::format("it should be a symbol: {}", list[0].Dump()));
+      }
       auto symbol = *list[0].AsSymbol();
 
       if (symbol == "if") {
         // (if (> 2 1) (* x x) (* x 2))
+        if (list.size() < 4) {
+          panic(fmt::format("illed form of if: {}", expr.Dump()));
+        }
         Expression predicate = ExtractList(list[1]);
         Expression consequent = ExtractList(list[2]);
         Expression alternative = ExtractList(list[3]);
         return Condition(predicate, consequent, alternative);
       } else if (symbol == "define") {
         // (define symbol expression)
+        if (list.size() < 3) {
+          panic(fmt::format("illed form of define: {}", expr.Dump()));
+        }
         Symbol variable(*list[1].AsSymbol());
         Expression value = ExtractList(list[2]);
         return Definition(variable, value);
       } else if (symbol == "quote") {
         // (quote expression)
+        if (list.size() < 2) {
+          panic(fmt::format("illed form of quotation: {}", expr.Dump()));
+        }
         Expression value = list[1];
         return Quotation(value);
       } else if (symbol == "lambda") {

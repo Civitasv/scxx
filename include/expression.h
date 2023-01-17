@@ -14,6 +14,8 @@
 namespace scxx {
 struct Expression {
   enum Type {
+    /** None */
+    NONE,
     /** Atom */
     SYMBOL,
     NUMBER,
@@ -148,7 +150,7 @@ struct Expression {
   }
 
   friend std::ostream& operator<<(std::ostream& os, const Expression& expr);
-  std::string Dump();
+  std::string Dump() const;
 
  private:
   void InitializeLValue(const Expression& expr);

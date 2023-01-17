@@ -1,6 +1,8 @@
 #include "eval.h"
 
 #include "environment.h"
+#include "error.h"
+#include "fmt/core.h"
 #include "predicate.h"
 #include "type.h"
 
@@ -10,7 +12,11 @@ Expression Eval(const Expression& expr, Environment* env) {
     // just just return it
     return expr;
   } else if (expr.type == Expression::SYMBOL) {
-    return env->Find(*expr.AsSymbol());
+    auto result = env->Find(*expr.AsSymbol());
+    if (result.type == Expression::NONE) {
+      panic(fmt::format("cannot find symbol: {}", expr.Dump()));
+    }
+    return result;
   } else if (expr.type == Expression::CONDITION) {
     Expression predicate = Eval(*expr.AsCondition()->predicate, env);
     if (IsTrue(&predicate)) {
@@ -41,6 +47,9 @@ Expression Eval(const Expression& expr, Environment* env) {
                                  ? env->Find(*proc->AsSymbol())
                                  : *proc->AsProcedure();
 
+    if (expr.type == Expression::NONE) {
+      panic(fmt::format("cannot find procedure: {}", expr.Dump()));
+    }
     // 2. the args
     List args;
     for (auto& item : *call->args) {

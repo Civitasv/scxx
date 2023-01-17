@@ -13,7 +13,7 @@
 #include "type.h"
 
 namespace scxx {
-Expression::Expression() {}
+Expression::Expression() : type(NONE) {}
 
 Expression::Expression(const Expression& expr) { InitializeLValue(expr); }
 
@@ -122,7 +122,7 @@ std::ostream& operator<<(std::ostream& os, const Expression& expr) {
   return os;
 }
 
-std::string Expression::Dump() {
+std::string Expression::Dump() const {
   std::stringstream ss;
   ss << *this;
   return ss.str();
