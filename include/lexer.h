@@ -15,22 +15,29 @@ namespace scxx {
 struct Token {
   enum Type { LEFT_PAREN, RIGHT_PAREN, SYMBOL, NUMBER } type;
 
-  std::variant<Number, Symbol> value;
+  std::variant<std::unique_ptr<Number>, std::unique_ptr<Symbol>> value;
 
   Token(const Token& token) {
     switch (token.type) {
-      case NUMBER:
-        if (const Number* v = std::get_if<Number>(&token.value)) {
+      case NUMBER: {
+        const std::unique_ptr<Number>* v =
+            std::get_if<std::unique_ptr<Number>>(&token.value);
+        if (*v) {
           type = NUMBER;
-          value = *v;
+          value = std::make_unique<Number>(**v);
         }
         break;
-      case SYMBOL:
-        if (const Symbol* v = std::get_if<Symbol>(&token.value)) {
+      }
+      case SYMBOL: {
+        const std::unique_ptr<Symbol>* v =
+            std::get_if<std::unique_ptr<Symbol>>(&token.value);
+
+        if (*v) {
           type = SYMBOL;
-          value = *v;
+          value = std::make_unique<Symbol>(**v);
         }
         break;
+      }
       default:
         type = token.type;
         break;
@@ -39,18 +46,25 @@ struct Token {
 
   Token(Token&& token) {
     switch (token.type) {
-      case NUMBER:
-        if (Number* v = std::get_if<Number>(&token.value)) {
+      case NUMBER: {
+        const std::unique_ptr<Number>* v =
+            std::get_if<std::unique_ptr<Number>>(&token.value);
+        if (*v) {
           type = NUMBER;
-          value = std::move(*v);
+          value = std::make_unique<Number>(std::move(**v));
         }
         break;
-      case SYMBOL:
-        if (Symbol* v = std::get_if<Symbol>(&token.value)) {
+      }
+      case SYMBOL: {
+        const std::unique_ptr<Symbol>* v =
+            std::get_if<std::unique_ptr<Symbol>>(&token.value);
+
+        if (*v) {
           type = SYMBOL;
-          value = std::move(*v);
+          value = std::make_unique<Symbol>(std::move(**v));
         }
         break;
+      }
       default:
         type = token.type;
         break;
@@ -58,11 +72,19 @@ struct Token {
   }
 
   Token(Type type) : type(type) {}
-  Token(const Symbol& symbol) : type(SYMBOL) { value = symbol; }
-  Token(const Number& number) : type(NUMBER) { value = number; }
+  Token(const Symbol& symbol) : type(SYMBOL) {
+    value = std::make_unique<Symbol>(symbol);
+  }
+  Token(const Number& number) : type(NUMBER) {
+    value = std::make_unique<Number>(number);
+  }
 
-  Token(Symbol&& symbol) : type(SYMBOL) { value = std::move(symbol); }
-  Token(Number&& number) : type(NUMBER) { value = std::move(number); }
+  Token(Symbol&& symbol) : type(SYMBOL) {
+    value = std::make_unique<Symbol>(std::move(symbol));
+  }
+  Token(Number&& number) : type(NUMBER) {
+    value = std::make_unique<Number>(std::move(number));
+  }
 
   friend std::ostream& operator<<(std::ostream& os, const Token& token) {
     switch (token.type) {
@@ -73,10 +95,12 @@ struct Token {
         os << ")";
         break;
       case Token::SYMBOL:
-        std::visit([&os](auto&& arg) { os << "SYMBOL: " << arg; }, token.value);
+        std::visit([&os](auto&& arg) { os << "SYMBOL: " << *arg; },
+                   token.value);
         break;
       case Token::NUMBER:
-        std::visit([&os](auto&& arg) { os << "NUMBER: " << arg; }, token.value);
+        std::visit([&os](auto&& arg) { os << "NUMBER: " << *arg; },
+                   token.value);
         break;
       default:
         break;

@@ -49,10 +49,10 @@ class Parser {
       pos++;
       return list;
     } else if (token.type == Token::NUMBER) {
-      return std::get<Number>(token.value);
+      return *std::get<std::unique_ptr<Number>>(token.value);
     } else  // if(token.type == Token::SYMBOL)
     {
-      return std::get<Symbol>(token.value);
+      return *std::get<std::unique_ptr<Symbol>>(token.value);
     }
     return {};
   }
