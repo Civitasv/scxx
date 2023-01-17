@@ -2,6 +2,31 @@
 
 > Make use of modern C++ and RAII.
 
+## Usage
+
+```sh
+1 ]=> 1
+;Value: 1
+1 ]=> (+ 1 2)
+;Value: 3
+1 ]=> (define x 1)
+;Value: x
+1 ]=> (+ x 1)
+;Value: 2
+1 ]=> (define square (lambda (x) (* x x)))
+;Value: square
+1 ]=> (square 2)
+;Value: 4
+1 ]=> (if (> x 2) x 2)
+;Value: 2
+1 ]=> (cons 1 2)
+;Value: '(1 2)
+1 ]=> (car (cons 1 2))
+;Value: 1
+1 ]=> (cdr (cons 1 2))
+;Value: 2
+```
+
 ## Spec
 
 ```txt
