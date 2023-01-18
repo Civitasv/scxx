@@ -5,7 +5,7 @@
 
 namespace scxx {
 Environment::Environment() {}
-Environment::Environment(std::vector<Symbol> variables, List values,
+Environment::Environment(std::vector<Symbol>& variables, List& values,
                          Environment* outer_env)
     : outer_env(outer_env) {
   if (variables.size() != values.size()) {
@@ -16,7 +16,7 @@ Environment::Environment(std::vector<Symbol> variables, List values,
   }
 }
 
-Expression Environment::Find(Symbol variable) {
+Expression Environment::Find(const Symbol& variable) {
   if (env.find(variable) != env.end())
     return env[variable];
   else if (outer_env)

@@ -72,6 +72,3 @@ Expression Eval(const Expression& expr, Environment* env) {
   return {};
 }
 }  // namespace scxx
-
-// (map square '(1 2 3))
-// => ((square 1) (square 2) (square 3))
