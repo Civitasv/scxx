@@ -9,7 +9,7 @@
 auto directoryDisposer =
     ApprovalTests::Approvals::useApprovalsSubdirectory("approval_tests");
 
-auto path = "nvim";
+auto path = "code-insiders";
 auto arguments = "-d -O {Approved} {Received}";
 auto reporter =
     ApprovalTests::CustomReporter::createForegroundReporter(path, arguments);
