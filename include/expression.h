@@ -1,11 +1,25 @@
 #pragma once
 
+#include <llvm/ADT/APFloat.h>
+#include <llvm/ADT/STLExtras.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Verifier.h>
+
 #include <iostream>
+#include <map>
 #include <vector>
 
 #include "call.h"
 #include "condition.h"
 #include "definition.h"
+#include "error.h"
 #include "primitive.h"
 #include "procedure.h"
 #include "quotation.h"
@@ -99,6 +113,7 @@ struct Expression {
     }
     return nullptr;
   }
+
   Quotation* AsQuotation() const {
     if (const std::unique_ptr<Quotation>* v =
             std::get_if<std::unique_ptr<Quotation>>(&value)) {
@@ -106,6 +121,7 @@ struct Expression {
     }
     return nullptr;
   }
+
   Condition* AsCondition() const {
     if (const std::unique_ptr<Condition>* v =
             std::get_if<std::unique_ptr<Condition>>(&value)) {
@@ -113,6 +129,7 @@ struct Expression {
     }
     return nullptr;
   }
+
   Definition* AsDefinition() const {
     if (const std::unique_ptr<Definition>* v =
             std::get_if<std::unique_ptr<Definition>>(&value)) {
@@ -120,6 +137,7 @@ struct Expression {
     }
     return nullptr;
   }
+
   Call* AsCall() const {
     if (const std::unique_ptr<Call>* v =
             std::get_if<std::unique_ptr<Call>>(&value)) {
@@ -127,6 +145,7 @@ struct Expression {
     }
     return nullptr;
   }
+
   Primitive* AsPrimitive() const {
     if (const std::unique_ptr<Primitive>* v =
             std::get_if<std::unique_ptr<Primitive>>(&value)) {
@@ -134,6 +153,7 @@ struct Expression {
     }
     return nullptr;
   }
+
   Procedure* AsProcedure() const {
     if (const std::unique_ptr<Procedure>* v =
             std::get_if<std::unique_ptr<Procedure>>(&value)) {
@@ -141,6 +161,7 @@ struct Expression {
     }
     return nullptr;
   }
+
   List* AsList() const {
     if (const std::unique_ptr<List>* v =
             std::get_if<std::unique_ptr<List>>(&value)) {
@@ -152,8 +173,28 @@ struct Expression {
   friend std::ostream& operator<<(std::ostream& os, const Expression& expr);
   std::string Dump() const;
 
+  // For llvm IR generation
+  llvm::Value* CodeGen();
+  llvm::Value* LogErrorV(const std::string& str) {
+    scxx::panic(str);
+    return nullptr;
+  }
+
  private:
   void InitializeLValue(const Expression& expr);
   void InitializeRValue(Expression&& expr);
+
+ private:
+  // for llvm IR generation
+  std::unique_ptr<llvm::LLVMContext>
+      the_context;  ///< contains a lot of core LLVM data structures
+  std::unique_ptr<llvm::IRBuilder<>>
+      builder;  ///< helper project that makes it easy to generate LLVM
+                ///< instructions.
+  std::unique_ptr<llvm::Module>
+      the_module;  ///< contains functions and global variables.
+  std::map<std::string, llvm::Value*>
+      named_values;  ///< keeps track of which values are defined in the current
+                     ///< scope and what their LLVM representation is.
 };
 }  // namespace scxx

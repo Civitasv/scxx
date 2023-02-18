@@ -263,4 +263,102 @@ void Expression::InitializeRValue(Expression&& expr) {
       break;
   }
 }
+
+llvm::Value* Expression::CodeGen() {
+  using namespace std;
+  using namespace llvm;
+  using LLVMType = llvm::Type;
+
+  switch (type) {
+    // case Expression::NUMBER: {
+    //   auto number = AsNumber();
+    //   return ConstantFP::get(*the_context, APFloat(*number));
+    // }
+    // case Expression::SYMBOL: {
+    //   auto symbol = AsSymbol();
+    //   // NOTE: Maybe I need environment model?
+    //   Value* v = named_values[*symbol];
+    //   if (!v) {
+    //     LogErrorV("Unknown symbol");
+    //   }
+    //   return v;
+    // }
+    // case Expression::QUOTATION: {
+    //   break;
+    // }
+    // case Expression::CONDITION: {
+    //   break;
+    // }
+    // case Expression::DEFINITION: {
+    //   auto definition = AsDefinition();
+    //   // 1. retrieve the variable
+    //   auto variable = definition->variable.get();
+    //   // 2. retrieve the value
+    //   auto value = definition->value->CodeGen();
+    //
+    //   // 3. add into named_values
+    //   named_values[*variable] = value;
+    // }
+    // case Expression::CALL: {
+    //   auto call = AsCall();
+    //
+    //   // 1. the function
+    //   Expression* proc = call->proc.get();
+    //   if (proc->type == SYMBOL) {
+    //   } else if (proc->type == PROCEDURE) {
+    //     // lambda
+    //   }
+    //   const Expression& expr = proc->type == Expression::SYMBOL
+    //                                ? env->Find(*proc->AsSymbol())
+    //                                : *proc->AsProcedure();
+    //
+    //   if (expr.type == Expression::NONE) {
+    //     panic(fmt::format("cannot find procedure: {}", expr.Dump()));
+    //   }
+    //   // 2. the args
+    //   List args;
+    //   for (auto& item : *call->args) {
+    //     args.push_back(Eval(item, env));
+    //   }
+    //
+    //   if (expr.type == Expression::PROCEDURE) {
+    //     auto body = expr.AsProcedure()->body.get();
+    //     auto params = expr.AsProcedure()->params.get();
+    //     Environment this_env(*params, args, env);
+    //     for (int i = 0; i < body->size() - 1; i++) {
+    //       Eval(body->at(i), &this_env);
+    //     }
+    //     return Eval(body->at(body->size() - 1), &this_env);
+    //   } else if (expr.type == Expression::PRIMITIVE) {
+    //     Proc proc = expr.AsPrimitive()->proc;
+    //     return proc(args);
+    //   }
+    //   break;
+    // }
+    // case Expression::PRIMITIVE: {
+    //   break;
+    // }
+    // case Expression::PROCEDURE: {
+    //   auto procedure = AsProcedure();
+    //   vector<LLVMType*> doubles(procedure->params->size(),
+    //                             llvm::Type::getDoubleTy(*the_context));
+    //   FunctionType* FT = FunctionType::get(LLVMType::getDoubleTy(*the_context),
+    //                                        doubles, false);
+    //
+    //   Function* F = Function::Create(FT, Function::ExternalLinkage, Name,
+    //                                  the_module.get());
+    //
+    //   // Set names for all arguments.
+    //   unsigned Idx = 0;
+    //   for (auto& Arg : F->args()) Arg.setName(Args[Idx++]);
+    //   break;
+    // }
+    // case Expression::LIST: {
+    //   break;
+    // }
+    // default: {
+    //   break;
+    // }
+  }
+}
 }  // namespace scxx
