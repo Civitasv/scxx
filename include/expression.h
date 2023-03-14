@@ -12,8 +12,10 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
 
+#include <cstddef>
 #include <iostream>
 #include <map>
+#include <variant>
 #include <vector>
 
 #include "call.h"
@@ -57,15 +59,15 @@ struct Expression {
 
   // clang-format off
   std::variant<
-    std::unique_ptr<Number>, 
-    std::unique_ptr<Symbol>,
-    std::unique_ptr<Definition>, 
-    std::unique_ptr<Quotation>,
-    std::unique_ptr<Condition>, 
-    std::unique_ptr<Call>,
-    std::unique_ptr<Procedure>, 
-    std::unique_ptr<Primitive>,
-    std::unique_ptr<List>
+    Number, 
+    Symbol,
+    Definition, 
+    Quotation,
+    Condition, 
+    Call,
+    Procedure, 
+    Primitive,
+    List
   > value;
   // clang-format on
 
@@ -98,74 +100,65 @@ struct Expression {
   Expression& operator=(const Expression& expr);
   Expression& operator=(Expression&& expr);
 
-  Symbol* AsSymbol() const {
-    if (const std::unique_ptr<Symbol>* v =
-            std::get_if<std::unique_ptr<Symbol>>(&value)) {
-      return v->get();
+  Symbol* AsSymbol() {
+    if (Symbol* v = std::get_if<Symbol>(&value)) {
+      return v;
     }
     return nullptr;
   }
 
-  Number* AsNumber() const {
-    if (const std::unique_ptr<Number>* v =
-            std::get_if<std::unique_ptr<Number>>(&value)) {
-      return v->get();
+  Number* AsNumber() {
+    if (Number* v = std::get_if<Number>(&value)) {
+      return v;
     }
     return nullptr;
   }
 
-  Quotation* AsQuotation() const {
-    if (const std::unique_ptr<Quotation>* v =
-            std::get_if<std::unique_ptr<Quotation>>(&value)) {
-      return v->get();
+  Quotation* AsQuotation() {
+    if (Quotation* v = std::get_if<Quotation>(&value)) {
+      return v;
     }
     return nullptr;
   }
 
-  Condition* AsCondition() const {
-    if (const std::unique_ptr<Condition>* v =
-            std::get_if<std::unique_ptr<Condition>>(&value)) {
-      return v->get();
+  Condition* AsCondition() {
+    if (Condition* v = std::get_if<Condition>(&value)) {
+      return v;
     }
     return nullptr;
   }
 
-  Definition* AsDefinition() const {
-    if (const std::unique_ptr<Definition>* v =
-            std::get_if<std::unique_ptr<Definition>>(&value)) {
-      return v->get();
+  Definition* AsDefinition() {
+    if (Definition* v = std::get_if<Definition>(&value)) {
+      return v;
     }
     return nullptr;
   }
 
-  Call* AsCall() const {
-    if (const std::unique_ptr<Call>* v =
-            std::get_if<std::unique_ptr<Call>>(&value)) {
-      return v->get();
+  Call* AsCall() {
+    if (Call* v = std::get_if<Call>(&value)) {
+      return v;
     }
     return nullptr;
   }
 
-  Primitive* AsPrimitive() const {
-    if (const std::unique_ptr<Primitive>* v =
-            std::get_if<std::unique_ptr<Primitive>>(&value)) {
-      return v->get();
+  Primitive* AsPrimitive() {
+    if (Primitive* v = std::get_if<Primitive>(&value)) {
+      return v;
     }
     return nullptr;
   }
 
-  Procedure* AsProcedure() const {
-    if (const std::unique_ptr<Procedure>* v =
-            std::get_if<std::unique_ptr<Procedure>>(&value)) {
-      return v->get();
+  Procedure* AsProcedure() {
+    if (Procedure* v = std::get_if<Procedure>(&value)) {
+      return v;
     }
     return nullptr;
   }
 
-  List* AsList() const {
-    if (const std::unique_ptr<List>* v =
-            std::get_if<std::unique_ptr<List>>(&value)) {
-      return v->get();
+  List* AsList() {
+    if (List* v = std::get_if<List>(&value)) {
+      return v;
     }
     return nullptr;
   }

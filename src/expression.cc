@@ -3,6 +3,7 @@
 #include <fmt/core.h>
 
 #include <sstream>
+#include <utility>
 
 #include "call.h"
 #include "condition.h"
@@ -20,64 +21,53 @@ Expression::Expression(const Expression& expr) { InitializeLValue(expr); }
 Expression::Expression(Expression&& expr) { InitializeRValue(std::move(expr)); }
 
 Expression::Expression(Type type) : type(type) {}
-Expression::Expression(const Symbol& symbol)
-    : type(SYMBOL), value(std::make_unique<Symbol>(symbol)) {}
+Expression::Expression(const Symbol& symbol) : type(SYMBOL), value(symbol) {}
 
-Expression::Expression(const Number& number)
-    : type(NUMBER), value(std::make_unique<Number>(number)) {}
+Expression::Expression(const Number& number) : type(NUMBER), value(number) {}
 
 Expression::Expression(const Quotation& quotation)
-    : type(QUOTATION), value(std::make_unique<Quotation>(quotation)) {}
+    : type(QUOTATION), value(quotation) {}
 
 Expression::Expression(const Condition& condition)
-    : type(CONDITION), value(std::make_unique<Condition>(condition)) {}
+    : type(CONDITION), value(condition) {}
 
 Expression::Expression(const Definition& definition)
-    : type(DEFINITION), value(std::make_unique<Definition>(definition)) {}
+    : type(DEFINITION), value(definition) {}
 
-Expression::Expression(const Call& call)
-    : type(CALL), value(std::make_unique<Call>(call)) {}
+Expression::Expression(const Call& call) : type(CALL), value(call) {}
 
-Expression::Expression(const List& list)
-    : type(LIST), value(std::make_unique<List>(list)) {}
+Expression::Expression(const List& list) : type(LIST), value(list) {}
 
 Expression::Expression(const Procedure& procedure)
-    : type(PROCEDURE), value(std::make_unique<Procedure>(procedure)) {}
+    : type(PROCEDURE), value(procedure) {}
 
 Expression::Expression(const Primitive& primitive)
-    : type(PRIMITIVE), value(std::make_unique<Primitive>(primitive)) {}
+    : type(PRIMITIVE), value(primitive) {}
 
 Expression::Expression(Symbol&& symbol)
-    : type(SYMBOL), value(std::make_unique<Symbol>(std::move(symbol))) {}
+    : type(SYMBOL), value(std::move(symbol)) {}
 
 Expression::Expression(Number&& number)
-    : type(NUMBER), value(std::make_unique<Number>(std::move(number))) {}
+    : type(NUMBER), value(std::move(number)) {}
 
 Expression::Expression(Quotation&& quotation)
-    : type(QUOTATION),
-      value(std::make_unique<Quotation>(std::move(quotation))) {}
+    : type(QUOTATION), value(std::move(quotation)) {}
 
 Expression::Expression(Condition&& condition)
-    : type(CONDITION),
-      value(std::make_unique<Condition>(std::move(condition))) {}
+    : type(CONDITION), value(std::move(condition)) {}
 
 Expression::Expression(Definition&& definition)
-    : type(DEFINITION),
-      value(std::make_unique<Definition>(std::move(definition))) {}
+    : type(DEFINITION), value(std::move(definition)) {}
 
-Expression::Expression(Call&& call)
-    : type(CALL), value(std::make_unique<Call>(std::move(call))) {}
+Expression::Expression(Call&& call) : type(CALL), value(std::move(call)) {}
 
-Expression::Expression(List&& list)
-    : type(LIST), value(std::make_unique<List>(std::move(list))) {}
+Expression::Expression(List&& list) : type(LIST), value(std::move(list)) {}
 
 Expression::Expression(Procedure&& procedure)
-    : type(PROCEDURE),
-      value(std::make_unique<Procedure>(std::move(procedure))) {}
+    : type(PROCEDURE), value(std::move(procedure)) {}
 
 Expression::Expression(Primitive&& primitive)
-    : type(PRIMITIVE),
-      value(std::make_unique<Primitive>(std::move(primitive))) {}
+    : type(PRIMITIVE), value(std::move(primitive)) {}
 
 Expression& Expression::operator=(const Expression& expr) {
   InitializeLValue(expr);
@@ -100,19 +90,19 @@ std::ostream& operator<<(std::ostream& os, const Expression& expr) {
     case Expression::PRIMITIVE:
     case Expression::PROCEDURE:
     case Expression::LAMBDA:
-      std::visit([&os](auto&& arg) { os << *arg; }, expr.value);
+      std::visit([&os](auto&& arg) { os << arg; }, expr.value);
       break;
     case Expression::LIST: {
-      List* list = std::get<std::unique_ptr<List>>(expr.value).get();
-      if (list->size() == 0) {
+      const List& list = std::get<List>(expr.value);
+      if (list.size() == 0) {
         os << "()";
         break;
       }
       os << "(";
-      for (int i = 0; i < list->size() - 1; i++) {
-        os << list->at(i) << " ";
+      for (int i = 0; i < list.size() - 1; i++) {
+        os << list[i] << " ";
       }
-      os << list->at(list->size() - 1);
+      os << list[list.size() - 1];
       os << ")";
     } break;
 
@@ -132,64 +122,57 @@ void Expression::InitializeLValue(const Expression& expr) {
   using namespace std;
   switch (expr.type) {
     case Expression::NUMBER:
-      if (const unique_ptr<Number>* v =
-              get_if<unique_ptr<Number>>(&expr.value)) {
+      if (const Number* v = get_if<Number>(&expr.value)) {
         type = NUMBER;
-        value = std::make_unique<Number>(**v);
+        value = *v;
       }
       break;
     case Expression::SYMBOL:
-      if (const unique_ptr<Symbol>* v =
-              get_if<unique_ptr<Symbol>>(&expr.value)) {
+      if (const Symbol* v = get_if<Symbol>(&expr.value)) {
         type = SYMBOL;
-        value = std::make_unique<Symbol>(**v);
+        value = *v;
       }
       break;
     case Expression::QUOTATION:
-      if (const unique_ptr<Quotation>* v =
-              get_if<unique_ptr<Quotation>>(&expr.value)) {
+      if (const Quotation* v = get_if<Quotation>(&expr.value)) {
         type = QUOTATION;
-        value = std::make_unique<Quotation>(**v);
+        value = *v;
       }
       break;
     case Expression::CONDITION:
-      if (const unique_ptr<Condition>* v =
-              get_if<unique_ptr<Condition>>(&expr.value)) {
+      if (const Condition* v = get_if<Condition>(&expr.value)) {
         type = CONDITION;
-        value = std::make_unique<Condition>(**v);
+        value = *v;
       }
       break;
     case Expression::DEFINITION:
-      if (const unique_ptr<Definition>* v =
-              get_if<unique_ptr<Definition>>(&expr.value)) {
+      if (const Definition* v = get_if<Definition>(&expr.value)) {
         type = DEFINITION;
-        value = std::make_unique<Definition>(**v);
+        value = *v;
       }
       break;
     case Expression::CALL:
-      if (const unique_ptr<Call>* v = get_if<unique_ptr<Call>>(&expr.value)) {
+      if (const Call* v = get_if<Call>(&expr.value)) {
         type = CALL;
-        value = std::make_unique<Call>(**v);
+        value = *v;
       }
       break;
     case Expression::PRIMITIVE:
-      if (const unique_ptr<Primitive>* v =
-              get_if<unique_ptr<Primitive>>(&expr.value)) {
+      if (const Primitive* v = get_if<Primitive>(&expr.value)) {
         type = PRIMITIVE;
-        value = std::make_unique<Primitive>(**v);
+        value = *v;
       }
       break;
     case Expression::PROCEDURE:
-      if (const unique_ptr<Procedure>* v =
-              get_if<unique_ptr<Procedure>>(&expr.value)) {
+      if (const Procedure* v = get_if<Procedure>(&expr.value)) {
         type = PROCEDURE;
-        value = std::make_unique<Procedure>(**v);
+        value = *v;
       }
       break;
     case Expression::LIST:
-      if (const unique_ptr<List>* v = get_if<unique_ptr<List>>(&expr.value)) {
+      if (const List* v = get_if<List>(&expr.value)) {
         type = LIST;
-        value = std::make_unique<List>(**v);
+        value = *v;
       }
       break;
     default:
@@ -201,60 +184,55 @@ void Expression::InitializeRValue(Expression&& expr) {
   using namespace std;
   switch (expr.type) {
     case Expression::NUMBER:
-      if (unique_ptr<Number>* v = get_if<unique_ptr<Number>>(&expr.value)) {
+      if (Number* v = get_if<Number>(&expr.value)) {
         type = NUMBER;
         value = std::move(*v);
       }
       break;
     case Expression::SYMBOL:
-      if (unique_ptr<Symbol>* v = get_if<unique_ptr<Symbol>>(&expr.value)) {
+      if (Symbol* v = get_if<Symbol>(&expr.value)) {
         type = SYMBOL;
         value = std::move(*v);
       }
       break;
     case Expression::QUOTATION:
-      if (unique_ptr<Quotation>* v =
-              get_if<unique_ptr<Quotation>>(&expr.value)) {
+      if (Quotation* v = get_if<Quotation>(&expr.value)) {
         type = QUOTATION;
         value = std::move(*v);
       }
       break;
     case Expression::CONDITION:
-      if (unique_ptr<Condition>* v =
-              get_if<unique_ptr<Condition>>(&expr.value)) {
+      if (Condition* v = get_if<Condition>(&expr.value)) {
         type = CONDITION;
         value = std::move(*v);
       }
       break;
     case Expression::DEFINITION:
-      if (unique_ptr<Definition>* v =
-              get_if<unique_ptr<Definition>>(&expr.value)) {
+      if (Definition* v = get_if<Definition>(&expr.value)) {
         type = DEFINITION;
         value = std::move(*v);
       }
       break;
     case Expression::CALL:
-      if (unique_ptr<Call>* v = get_if<unique_ptr<Call>>(&expr.value)) {
+      if (Call* v = get_if<Call>(&expr.value)) {
         type = CALL;
         value = std::move(*v);
       }
       break;
     case Expression::PRIMITIVE:
-      if (unique_ptr<Primitive>* v =
-              get_if<unique_ptr<Primitive>>(&expr.value)) {
+      if (Primitive* v = get_if<Primitive>(&expr.value)) {
         type = PRIMITIVE;
         value = std::move(*v);
       }
       break;
     case Expression::PROCEDURE:
-      if (unique_ptr<Procedure>* v =
-              get_if<unique_ptr<Procedure>>(&expr.value)) {
+      if (Procedure* v = get_if<Procedure>(&expr.value)) {
         type = PROCEDURE;
         value = std::move(*v);
       }
       break;
     case Expression::LIST:
-      if (unique_ptr<List>* v = get_if<unique_ptr<List>>(&expr.value)) {
+      if (List* v = get_if<List>(&expr.value)) {
         type = LIST;
         value = std::move(*v);
       }
@@ -342,7 +320,8 @@ llvm::Value* Expression::CodeGen() {
     //   auto procedure = AsProcedure();
     //   vector<LLVMType*> doubles(procedure->params->size(),
     //                             llvm::Type::getDoubleTy(*the_context));
-    //   FunctionType* FT = FunctionType::get(LLVMType::getDoubleTy(*the_context),
+    //   FunctionType* FT =
+    //   FunctionType::get(LLVMType::getDoubleTy(*the_context),
     //                                        doubles, false);
     //
     //   Function* F = Function::Create(FT, Function::ExternalLinkage, Name,

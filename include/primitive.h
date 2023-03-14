@@ -19,26 +19,26 @@ struct Primitive {
   Primitive& operator=(const Primitive& primitive);
   Primitive& operator=(Primitive&& primitive);
 
-  friend std::ostream& operator<<(std::ostream& os, const Primitive& primitive);
+  friend std::ostream& operator<<(std::ostream& os, Primitive& primitive);
 };
 
-Expression Add(const List& exprs);
-Expression Minus(const List& exprs);
-Expression Product(const List& exprs);
-Expression Divide(const List& exprs);
+Expression Add(List& exprs);
+Expression Minus(List& exprs);
+Expression Product(List& exprs);
+Expression Divide(List& exprs);
 
-Expression Gt(const List& exprs);
-Expression Lt(const List& exprs);
-Expression Ge(const List& exprs);
-Expression Le(const List& exprs);
-Expression Eq(const List& exprs);
-Expression Abs(const List& exprs);
-Expression Cons(const List& exprs);
-Expression Car(const List& exprs);
-Expression Cdr(const List& exprs);
-Expression Max(const List& exprs);
-Expression Min(const List& exprs);
-Expression Empty(const List& exprs);
+Expression Gt(List& exprs);
+Expression Lt(List& exprs);
+Expression Ge(List& exprs);
+Expression Le(List& exprs);
+Expression Eq(List& exprs);
+Expression Abs(List& exprs);
+Expression Cons(List& exprs);
+Expression Car(List& exprs);
+Expression Cdr(List& exprs);
+Expression Max(List& exprs);
+Expression Min(List& exprs);
+Expression Empty(List& exprs);
 
 Environment* StandardEnv();
 }  // namespace scxx

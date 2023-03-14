@@ -7,7 +7,7 @@
 #include "type.h"
 
 namespace scxx {
-Expression Eval(const Expression& expr, Environment* env) {
+Expression Eval(Expression& expr, Environment* env) {
   if (expr.type == Expression::NUMBER) {
     // just just return it
     return expr;
@@ -40,12 +40,12 @@ Expression Eval(const Expression& expr, Environment* env) {
     proc->env = env;
     return *proc;
   } else if (expr.type == Expression::CALL) {
-    Call* call = expr.AsCall();
+    const Call* call = expr.AsCall();
     // 1. the function
     Expression* proc = call->proc.get();
-    const Expression& expr = proc->type == Expression::SYMBOL
-                                 ? env->Find(*proc->AsSymbol())
-                                 : *proc->AsProcedure();
+    Expression expr = proc->type == Expression::SYMBOL
+                          ? env->Find(*proc->AsSymbol())
+                          : *proc->AsProcedure();
 
     if (expr.type == Expression::NONE) {
       panic(fmt::format("cannot find procedure: {}", expr.Dump()));

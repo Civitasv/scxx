@@ -32,12 +32,12 @@ Primitive& Primitive::operator=(Primitive&& primitive) {
   return *this;
 }
 
-std::ostream& operator<<(std::ostream& os, const Primitive& primitive) {
+std::ostream& operator<<(std::ostream& os, Primitive& primitive) {
   os << "[Primitive: " << *primitive.proc_name << "]";
   return os;
 }
 
-Expression Add(const List& exprs) {
+Expression Add(List& exprs) {
   double d = 0.0;
   for (auto& expr : exprs) {
     d += *expr.AsNumber();
@@ -45,7 +45,7 @@ Expression Add(const List& exprs) {
   return d;
 }
 
-Expression Minus(const List& exprs) {
+Expression Minus(List& exprs) {
   double d = *exprs[0].AsNumber();
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
@@ -54,7 +54,7 @@ Expression Minus(const List& exprs) {
   return d;
 }
 
-Expression Product(const List& exprs) {
+Expression Product(List& exprs) {
   double d = 1.0;
   for (auto& expr : exprs) {
     d *= *(expr.AsNumber());
@@ -62,7 +62,7 @@ Expression Product(const List& exprs) {
   return d;
 }
 
-Expression Divide(const List& exprs) {
+Expression Divide(List& exprs) {
   double d = *exprs[0].AsNumber();
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
@@ -71,7 +71,7 @@ Expression Divide(const List& exprs) {
   return d;
 }
 
-Expression Gt(const List& exprs) {
+Expression Gt(List& exprs) {
   double d = *exprs[0].AsNumber();
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
@@ -80,7 +80,7 @@ Expression Gt(const List& exprs) {
   return Symbol("#t");
 }
 
-Expression Lt(const List& exprs) {
+Expression Lt(List& exprs) {
   double d = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
@@ -89,7 +89,7 @@ Expression Lt(const List& exprs) {
   return Symbol("#t");
 }
 
-Expression Ge(const List& exprs) {
+Expression Ge(List& exprs) {
   double d = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
@@ -98,7 +98,7 @@ Expression Ge(const List& exprs) {
   return Symbol("#t");
 }
 
-Expression Le(const List& exprs) {
+Expression Le(List& exprs) {
   double d = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
@@ -107,7 +107,7 @@ Expression Le(const List& exprs) {
   return Symbol("#t");
 }
 
-Expression Eq(const List& exprs) {
+Expression Eq(List& exprs) {
   double d = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
@@ -116,27 +116,27 @@ Expression Eq(const List& exprs) {
   return Symbol("#t");
 }
 
-Expression Abs(const List& exprs) {
+Expression Abs(List& exprs) {
   double d = std::abs(*(exprs[0].AsNumber()));
   return d;
 }
 
-Expression Cons(const List& exprs) {
+Expression Cons(List& exprs) {
   List list;
   list.push_back(exprs[0]);
   list.push_back(exprs[1]);
   return Quotation(list);
 }
 
-Expression Car(const List& exprs) {
+Expression Car(List& exprs) {
   return (*exprs[0].AsQuotation()->quotes->AsList())[0];
 }
 
-Expression Cdr(const List& exprs) {
+Expression Cdr(List& exprs) {
   return (*exprs[0].AsQuotation()->quotes->AsList())[1];
 }
 
-Expression Max(const List& exprs) {
+Expression Max(List& exprs) {
   double max = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
@@ -145,7 +145,7 @@ Expression Max(const List& exprs) {
   return max;
 }
 
-Expression Min(const List& exprs) {
+Expression Min(List& exprs) {
   double min = *(exprs[0].AsNumber());
   for (int i = 1; i < exprs.size(); i++) {
     Expression expr = exprs[i];
@@ -154,7 +154,7 @@ Expression Min(const List& exprs) {
   return min;
 }
 
-Expression Empty(const List& exprs) {
+Expression Empty(List& exprs) {
   List list = *exprs[0].AsList();
   return list.size() == 0 ? Symbol("#t") : Symbol("#f");
 }
