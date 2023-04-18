@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "type.h"
+#include "expression.h"
 
 namespace scxx {
 class Environment {
@@ -19,6 +20,8 @@ class Environment {
   void Insert(const Symbol& variable, const Expression& expression);
 
   ~Environment();
+
+  static Environment* StandardEnv();
 
  private:
   std::unordered_map<Symbol, Expression> env;

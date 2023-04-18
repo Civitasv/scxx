@@ -6,6 +6,7 @@
 #include <vector>
 
 namespace scxx {
+class Environment;
 struct Expression;
 using Symbol = std::string;
 using Number = double;

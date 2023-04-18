@@ -22,7 +22,7 @@ void print(const std::string& message) { std::cout << message; }
 
 void repl() {
   using namespace scxx;
-  Environment* environment = StandardEnv();
+  Environment* environment = Environment::StandardEnv();
   Lexer lexer;
   Parser parser;
   // read, eval, print, loop

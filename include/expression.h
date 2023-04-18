@@ -169,7 +169,7 @@ struct Expression {
   // For llvm IR generation
   llvm::Value* CodeGen();
   llvm::Value* LogErrorV(const std::string& str) {
-    scxx::panic(str);
+    panic(str);
     return nullptr;
   }
 
