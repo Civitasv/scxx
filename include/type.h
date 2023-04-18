@@ -1,13 +1,15 @@
 ﻿#pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace scxx {
+class Environment;
 struct Expression;
 using Symbol = std::string;
 using Number = double;
-typedef std::vector<Expression> List;
-typedef Expression (*Proc)(const List&);
+using List = std::vector<Expression>;
+using Proc = std::function<Expression(List&)>;
 }  // namespace scxx

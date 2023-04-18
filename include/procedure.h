@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include "environment.h"
 #include "type.h"
 
 namespace scxx {
